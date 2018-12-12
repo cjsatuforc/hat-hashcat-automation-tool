@@ -20,6 +20,7 @@
 import datetime
 import os
 import platform
+import shlex
 import subprocess
 import sys
 import time
@@ -97,41 +98,57 @@ def pot_file():
     
 #Hashcat Command Line Menu
 def hashcat_command_line_menu():
-    #global wordlist
     os.system('clear')
     print("Trying to crack you hash...")
     app = "/opt/hashcat/hashcat "
+    app_split = shlex.split(app)
     attack_mode_brute_force = "-a 0 " 
+    a_m_b_f = shlex.split(attack_mode_brute_force)
     hash_type_NetNTLMv2 = "-m 5600 "
+    h_t_ntlm2 = shlex.split(hash_type_NetNTLMv2)
     hash_path_and_name = os.getcwd() + "/" + single_hash_file_name
+    h_p_and_n = shlex.split(hash_path_and_name)
     pot_file = " --potfile-path " + pot
-    #ordlist = " /opt/wordlists/rockyou.txt "
-    #wordlist = str(auto_wordlists())
+    p_f = shlex.split(pot_file)
+    wordlist_split = auto_wordlists()
     cmd_defaults = " -w 3 "
+    c_d = shlex.split(cmd_defaults)
     print('----Running Hashcat Command')
-#   print(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + files_path + cmd_defaults)
+    a = app_split + a_m_b_f + h_t_ntlm2 + h_p_and_n + p_f + wordlist_split + c_d
+    b = subprocess.call(a)
+    #print(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + files_path + cmd_defaults)
 #subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + each_wordlist + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist + cmd_defaults, shell=True)
-    #string = subprocess.call("find /home/awer -type f -iname " + file, shell=True)
+#subprocess.call("/opt/hashcat/hashcat -a 0 -m 5600 NetNTLMv2.hash -w 3 -O " + wordlist, shell=True)
+#print(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_split + cmd_defaults)
+#subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + auto_wordlists() + cmd_defaults, shell=True)
+#subprocess.call("/opt/hashcat/hashcat -a 0 -m 5600 NetNTLMv2.hash -w 3 -O /opt/wordlists/rockyou.txt", shell=True)
+
     
 
 
 #Wordlists - Auto
 def auto_wordlists():
-    global files_path
-#   global each_wordlist
-# rootdir = '/opt/wordlists/less-than-1GB/'
-#   for subdir, dirs, files in os.walk(rootdir):
-#       for file in files:
-#           each_wordlist = os.path.join(subdir, file)
-#    files_path = str([os.path.abspath(x) for x in os.listdir(rootdir)])
+    global wordlist_split
+#The top directory for walk:
+    topdir = '/opt/wordlists/less-than-1GB/'
+#The extension to search for:
+    exten = '.txt'
+    for dirpath, dirnames, files in os.walk(topdir):
+        for wordlist_filename in files:
+            if wordlist_filename.endswith(exten):
+                wordlist = (os.path.join(dirpath, wordlist_filename))
+                wordlist_split = shlex.split(wordlist)
+#subprocess.call("/opt/hashcat/hashcat -a 0 -m 5600 NetNTLMv2.hash -w 3 -O " + wordlist, shell=True)
+                                                            
 
 #Rules Menu
 
 #Crack Menu 0
-def crack_menu_0():
+def crack_menu_0(): #Automated less than <1GB
+    global wordlist
     os.system('clear')
-    #ordlist
+    wordlist = os.listdir("/opt/wordlists/less-than-1GB")
+    #print list
     pot_file()
     
 #Crack Menu 1
