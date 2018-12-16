@@ -32,7 +32,7 @@ import os
 topdir = '/opt/wordlists/less-than-1GB/'
 
 # The extension to search for
-exten = '.txt'
+exten = ''
 
 
 for dirpath, dirnames, files in os.walk(topdir):

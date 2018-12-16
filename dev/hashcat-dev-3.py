@@ -1,4 +1,3 @@
-
 #!/usr/bin/python2.7
 #coding=utf-8
 #
@@ -86,10 +85,11 @@ def pot_file():
             pot_create.close()
             os.chmod(pot, 0o755) #NOT A TYPO- Written in Octel Format
             print("File Created")
-            hashcat_command_line_menu()
+            #hashcat_command_line_menu()
+            return
         else:
             print(pot_name)
-            pot = pot.lower()
+            pot = pot_name.lower()
             pot = pot + ".pot "
             os.chmod(pot, 0o755) #NOT A TYPO- Written in Octel Format
             hashcat_command_line_menu()
@@ -99,19 +99,21 @@ def pot_file():
     
 #Hashcat Command Line Menu
 def hashcat_command_line_menu():
+    global app
+    global attack_mode_brute_force
+    global hash_type_NetNTLMv2
+    global hash_path_and_name
+    global pot_file
+    global cmd_defaults
     os.system('clear')
     print("Trying to crack you hash...")
     app = '/opt/hashcat/hashcat '
-    attack_mode_brute_force = " -a 0 " 
-    hash_type_NetNTLMv2 = " -m 5600 "
-    hash_path_and_name = os.getcwd() + "/" + single_hash_file_name
-    print(hashcat_path + "/" + single_hash_file_name)
+    attack_mode_brute_force = ' -a 0 ' 
+    hash_type_NetNTLMv2 = ' -m 5600 '
+    hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
     pot_file = ' --potfile-path ' + pot
-    wordlist = auto_wordlists()
-    print(wordlist)
-    input("Press to continue")
-    cmd_defaults = " -w 3 -O "
-    print('----Running Hashcat Command')
+    cmd_defaults = ' -w 3 -O '
+    print("----Running Hashcat Command")
     print(repr(app))
     print(type(app))
     print(repr(attack_mode_brute_force))
@@ -123,43 +125,43 @@ def hashcat_command_line_menu():
     print(type(hash_path_and_name))
     print(repr(pot_file))
     print(type(pot_file))
-    print(repr(wordlist))
-    print(type(wordlist))
+    #print(repr(wordlist))
+    #print(type(wordlist))
     print(repr(cmd_defaults))
     print(type(cmd_defaults))
     print("All together Below")
-    print(repr(app),(attack_mode_brute_force),(hash_type_NetNTLMv2),(hash_path_and_name),(pot_file),(auto_wordlists()),(cmd_defaults))
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist + cmd_defaults, shell=True)
+    #print(repr(app),(attack_mode_brute_force),(hash_type_NetNTLMv2),(hash_path_and_name),(pot_file),(wordlist),(cmd_defaults))
+    #input("Press to Continue..")
+    auto_wordlists()
+    #subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist + cmd_defaults, shell=True)
 #subprocess.call("/opt/hashcat/hashcat -a 0 -m 5600 NetNTLMv2.hash -w 3 -O " + wordlist, shell=True)
 #print(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_split + cmd_defaults)
     #subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist + cmd_defaults, shell=True)
 #subprocess.call("/opt/hashcat/hashcat -a 0 -m 5600 NetNTLMv2.hash -w 3 -O /opt/wordlists/rockyou.txt", shell=True)
 
-    
-
 
 #Wordlists - Auto
 def auto_wordlists():
-#The top directory for walk:
-    topdir = '/opt/wordlists/less-than-1GB/'
-#The extension to search for:
     exten = '.txt'
-    for dirpath, dirnames, files in os.walk(topdir):
+    for dirpath, dirnames, files in os.walk(wordlist_directory):
         for wordlist_filename in files:
             if wordlist_filename.endswith(exten):
-                wordlist = (os.path.join(dirpath, wordlist_filename))
-                return wordlist
-
-                                                     
-
+                abs_wordlist = (os.path.join(dirpath, wordlist_filename))
+                print(abs_wordlist)
+                input("Press to continue")
+                print(repr(app),(attack_mode_brute_force),(hash_type_NetNTLMv2),(hash_path_and_name),(pot_file),(abs_wordlist),(cmd_defaults))
+                input("Press to continue")
+                subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
+                return abs_wordlist
+            
 #Rules Menu
 
 #Crack Menu 0
-def crack_menu_0(): #Automated less than <1GB
-    global wordlist
-    wordlist = os.listdir("/opt/wordlists/less-than-1GB")
-    #print list
+def crack_menu_0(): # - Automated less than <1GB
+    global wordlist_directory
+    wordlist_directory = "/opt/wordlists/less-than-1GB/"
     pot_file()
+    hashcat_command_line_menu()
     
 #Crack Menu 1
 def crack_menu_1():
@@ -257,7 +259,7 @@ def single_hash_menu():
     #single_hash_string = [single_hash]
     single_hash_string = str(single_hash)
     print("")
-    print("Your Entry was - ") + single_hash_string
+    print("Your Entry was" + '\n') + single_hash_string
     print("OK - Need to put the hash into a File...") # Put hash into a file
     single_hash_file_name = raw_input("Enter a logical filename: ")
     sh = open(single_hash_file_name, "w")
@@ -300,4 +302,5 @@ def main_menu():
     except KeyboardInterrupt:
                 sys.exit()
 
-main_menu()
+if __name__ == '__main__':
+    main_menu()
