@@ -5,7 +5,7 @@
 #Latest update - Pre-Release
 #Last Modified - 05/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.1
+#Version 0.2
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
