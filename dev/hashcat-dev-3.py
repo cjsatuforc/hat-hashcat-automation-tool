@@ -100,46 +100,60 @@ def pot_file():
 def hashcat_command_line_menu():
     global app
     global attack_mode_brute_force
+    global attack_mode_inc_left
+    global attack_mode_inc_right
+    global cmd_defaults
+    global four_any_characters
     global hash_type_NetNTLMv2
     global hash_path_and_name
+    global increment
     global pot_file
-    global cmd_defaults
     os.system('clear')
     print("Trying to crack you hash...")
     app = '/opt/hashcat/hashcat '
     attack_mode_brute_force = ' -a 0 ' 
+    attack_mode_inc_right = ' -a 6 '
+    attack_mode_inc_left = ' -a 7 '
+    increment = ' --increment '
     hash_type_NetNTLMv2 = ' -m 5600 '
     hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
     pot_file = ' --potfile-path ' + pot
     cmd_defaults = ' -w 3 -O '
+    four_any_characters = " ?a?a?a?a "
     print("----Running Hashcat Command")
-    print(repr(app))
-    print(type(app))
-    print(repr(attack_mode_brute_force))
-    print(type(attack_mode_brute_force))
-    print(repr(hash_type_NetNTLMv2))
-    print(type(hash_type_NetNTLMv2))
-    print(repr(hash_path_and_name))
-    print(type(hash_path_and_name))
+'''
     print(repr(pot_file))
     print(type(pot_file))
     print(repr(cmd_defaults))
     print(type(cmd_defaults))
     print("All together Below")
-    find_relevant_files()
+'''
 
-
-#Wordlists - Auto
-def find_relevant_files():
+#Straight Wordlist_walk
+def wordlist_walk():
     exten = '.txt'
     for dirpath, dirnames, files in os.walk(wordlist_directory):
         for wordlist_filename in files:
             if wordlist_filename.endswith(exten):
                 abs_wordlist = (os.path.join(dirpath, wordlist_filename))
                 subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
-                    
+                                                                            
 
-#Rules Menu
+
+#Single Wordlist Testing                    
+def singular_wordlist():
+    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + cmd_defaults, shell=True)
+
+#Single list for menu 5 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on RIGHT SIDE
+def hc_command_menu_5():
+    subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + four_any_characters + cmd_defaults + increment, shell=True)
+
+#Single list for menu 6 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on LEFT SIDE
+def hc_command_menu_6():
+    subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + four_any_characters + wordlist_directory + cmd_defaults + increment, shell=True)
+    
+
+
 
 #Crack Menu 0
 def crack_menu_0(): # - Automated less than <1GB
@@ -147,7 +161,8 @@ def crack_menu_0(): # - Automated less than <1GB
     wordlist_directory = "/opt/wordlists/less-than-1GB/"
     pot_file()
     hashcat_command_line_menu()
-    
+    wordlist_walk()
+
 #Crack Menu 1
 def crack_menu_1():
     os.system('clear')
@@ -165,20 +180,33 @@ def crack_menu_3():
 def crack_menu_4():
     os.system('clear')
         
-#Crack Menu 5
+#Crack Menu 5 - Oxfor Dic, capital letter, upto 4 characters, incrementally - RIGHT SIDE
 def crack_menu_5():
-    os.system('clear')
-        
-#Crack Menu 6 - Rockyou-75.txt only
-def crack_menu_6():
-    global wordlist
-    os.system('clear')
-    wordlist = " /opt/wordlists/rockyou-75.txt "
+    global wordlist_directory
+    wordlist_directory = "/opt/wordlists/english-words/english-words/words_first_letter_upper.txt"
     pot_file()
+    hashcat_command_line_menu()
+    hc_command_menu_5()
+
+#Crack Menu 6 - Oxfor Dic, capital letter, upto 4 characters, incrementally - LEFT SIDE
+def crack_menu_6():
+    global wordlist_directory
+    wordlist_directory = "/opt/wordlists/english-words/english-words/words_first_letter_upper.txt"
+    pot_file()
+    hashcat_command_line_menu()
+    hc_command_menu_6()
+                
     
-#Crack Menu 7
+#Crack Menu 7 - rockyou.txt only 
 def crack_menu_7():
-    os.system('clear')
+    global single_wordlist
+    single_wordlist = "/opt/wordlists/rockyou.txt"
+    pot_file()
+    hashcat_command_line_menu()
+    singular_wordlist()
+                        
+
+    
         
 #Crack Menu 8 - Back Crack - go back one stage...
 def back_crack():
@@ -195,14 +223,14 @@ def crack_menu():
             print("")
             print("Hashcat Cracking Menu")
             print("Only for NTLM or NetNTLM - WPA or WEP to DO")
-            print("0) Automated Testing - Try all words lists between <1GB - 1GB")
+            print("0) Automated Testing - Try all words lists between <1GB - 1GB - Common Credentials")
             print("1) Automated Testing - Try all words lists between 1GB - <2GB")
             print("2) Automated Testing - Try all words lists between 2GB - <3GB")
             print("3) Automated Testing - Try all words lists between 3GB - <4GB")
-            print("4) Automated Testing - Try all words lists 4GB+")
-            print("5) Automated Testing - Try all words lists between <1GB - 4GB+")
-            print("6) Automated Testing - Try rockyou")
-            print("7) Automated Testing - Try rockyou with rules - To be added")
+            print("4) Automated Testing - Try all words lists 4GB+ - (will take a while to cache each wordlist priot to testing)")
+            print("5) Automated Testing - Try Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on RIGHT SIDE")
+            print("6) Automated Testing - Try Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on LEFT SIDE")
+            print("7) Automated Testing - Try rockyou")
             print("8) Back")
             crack_option = {"0": crack_menu_0,
                             "1": crack_menu_1,
@@ -234,13 +262,12 @@ def single_hash_menu():
     os.system('clear')
     banner()
     print("Example NetNTLMv2 Hash")
-    print("joe.bloggs::EVILCORP:1122334455667788:1485E4D637D4827A6DA1660DFD6CEFE9:11011000100100001A744106B78CD401252CEEC0FDBD9D0E000000000200060053004D0042000100160053004D0042002D0054004F004F004C004B00490054000400120073006D0062002E006C006F00630061006C000300280073006500720076006500720032003000300033002E0073006D0062002E006C006F00630061006C000500120073006D0062002E006C006F00630061006C0008003000300000000000000000000000002000005387ECE822900E4E5D75F8648229F71008A6E1EFFD5A059A3AA6B066ED75330B0A001000000000000000000000000000000000000900140048005400540050002F00790061006E006E0079000000000000000000" + "\n")
+    print("NIGEL.BOYCE::MLTD:1122334455667788:1880e4d532d4825a6da1c60dfd3cefe9:01010000000000001a744106b78cd401252ceec0fdbd9d0e000000000200060053004d0042000100160053004d0042002d0054004f004f004c004b00490054000400120073006d0062002e006c006f00630061006c000300280073006500720076006500720032003000300033002e0073006d0062002e006c006f00630061006c000500120073006d0062002e006c006f00630061006c0008003000300000000000000000000000002000005387ece822900e4e5d75f8648229f71008a6e1effd5a059a3aa6b066ed75330b0a001000000000000000000000000000000000000900140048005400540050002f00790061006e006e0079000000000000000000" + "\n")
     print("OR" + "\n")
     print("admin::N46iSNekpT:08ca45b7d7ea58ee:88dcbe4446168966a153a0064958dac6:5c7830315c7830310000000000000b45c67103d07d7b95acd12ffa11230e0000000052920b85f78d013c31cdb3b92f5d765c783030")
     print("")
     print("")
     single_hash = raw_input("Add your hash" + '\n')
-    #single_hash_string = [single_hash]
     single_hash_string = str(single_hash)
     print("")
     print("Your Entry was" + '\n') + single_hash_string
