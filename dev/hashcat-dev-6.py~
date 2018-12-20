@@ -2,9 +2,9 @@
 '''
 #Creation Date - 05/12/2018
 #Latest update - Pre-Release
-#Last Modified - 20/12/2018
+#Last Modified - 05/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.7
+#Version 0.2
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
@@ -107,9 +107,8 @@ def hashcat_command_line_menu():
     global hash_path_and_name
     global increment
     global pot_file
-    global rule_set_arg
     os.system('clear')
-    print("Trying to crack your hash...")
+    print("Trying to crack you hash...")
     app = '/opt/hashcat/hashcat '
     attack_mode_brute_force = ' -a 0 ' 
     attack_mode_inc_right = ' -a 6 '
@@ -120,8 +119,7 @@ def hashcat_command_line_menu():
     pot_file = ' --potfile-path ' + pot
     cmd_defaults = ' -w 3 -O '
     four_any_characters = " ?a?a?a?a "
-    rule_set_arg = ' -r '
-    print("----Running Hashcat Command----")
+    print("----Running Hashcat Command")
     return
 
 
@@ -133,15 +131,6 @@ def wordlist_walk():
             if wordlist_filename.endswith(exten):
                 abs_wordlist = (os.path.join(dirpath, wordlist_filename))
                 subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
-
-#Rule Set Walk
-def rule_set_walk():
-    exten = '.rule'
-    for dirpath, dirnames, files in os.walk(rule_set_directory):
-        for rule_set_filename in files:
-            if rule_set_filename.endswith(exten):
-                abs_rule_set = (os.path.join(dirpath, rule_set_filename))
-                subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
 
 
 #Single Wordlist Testing                    
@@ -160,8 +149,8 @@ def hc_command_menu_6():
 
     
 #Hashcat with Rule Sets
-def singular_wordlist_rule_set():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_directory + cmd_defaults, shell=True)
+def singular_wordlist_ruleset():
+    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set + cmd_defaults, shell=True)
     
 
 #Crack Menu 0 - Try all words lists lessthan <1GB -  Common Credentials
@@ -200,7 +189,7 @@ def crack_menu_4():
     hashcat_command_line_menu()
     wordlist_walk()
 
-#Crack Menu 5 - Oxford Dic, capital letter, upto 4 characters, incrementally - RIGHT SIDE
+#Crack Menu 5 - Oxfor Dic, capital letter, upto 4 characters, incrementally - RIGHT SIDE
 def crack_menu_5():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/english-words/words_first_letter_upper.txt"
@@ -208,7 +197,7 @@ def crack_menu_5():
     hashcat_command_line_menu()
     hc_command_menu_5()
 
-#Crack Menu 6 - Oxford Dic, capital letter, upto 4 characters, incrementally - LEFT SIDE
+#Crack Menu 6 - Oxfor Dic, capital letter, upto 4 characters, incrementally - LEFT SIDE
 def crack_menu_6():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/english-words/words_first_letter_upper.txt"
@@ -227,43 +216,33 @@ def crack_menu_7():
 #Crack Menu 8 - Rockyou with rule - Best64
 def crack_menu_8():
     global single_wordlist
-    global rule_set_directory
-    single_wordlist = " /opt/wordlists/rockyou.txt "
-    rule_set_directory = " /opt/hashcat/rules/best64.rule "
+    global rule_set
+    single_wordlist = "/opt/wordlists/rockyou.txt"
+    rule_set = " -r /opt/hashcat/rules/best64.rule"
     pot_file()
     hashcat_command_line_menu()
-    singular_wordlist_rule_set()
+    singular_wordlist_ruleset()
 
 #Crack Menu 9 - Rockyou with rule - d3ad0ne
 def crack_menu_9():
     global single_wordlist
-    global rule_set_directory
+    global rule_set
     single_wordlist = "/opt/wordlists/rockyou.txt"
-    rule_set_directory = " /opt/hashcat/rules/d3ad0ne.rule"
+    rule_set = " -r /opt/hashcat/rules/d3ad0ne.rule"
     pot_file()
     hashcat_command_line_menu()
-    singular_wordlist_rule_set()
+    singular_wordlist_ruleset()
     
 #Crack Menu 10 - Rockyou with rule - OneRuleToRuleThemAll
 def crack_menu_10():
     global single_wordlist
-    global rule_set_directory
+    global rule_set
     single_wordlist = "/opt/wordlists/rockyou.txt"
-    rule_set_directory = " /opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
+    rule_set = " -r /opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
     pot_file()
     hashcat_command_line_menu()
-    singular_wordlist_rule_set()
-
-#Crack Menu 11 - Rock you with rule - KoreLogicRules
-def crack_menu_11():
-    global single_wordlist
-    global rule_set_directory
-    single_wordlist = " /opt/wordlists/rockyou.txt "
-    rule_set_directory = "/opt/wordlists/rules/hashcat-rules/"
-    pot_file()
-    hashcat_command_line_menu()
-    rule_set_walk()
-
+    singular_wordlist_ruleset()
+                                
  
 #Crack Menu (Back Crack) - go back one stage...
 def back_crack():
@@ -291,7 +270,6 @@ def crack_menu():
             print("8) Rockyou with rule - Best64")
             print("9) Rockyou with rule - d3ad0ne")
             print("10) Rockyou with rule - OneRuleToRuleThemAll")
-            print("11) Rock you with rule - KoreLogicRules (Thanks to KoreLogic.com)")
             print("b) Back to Main Menu")
             crack_option = {"0": crack_menu_0,
                             "1": crack_menu_1,
@@ -304,7 +282,6 @@ def crack_menu():
                             "8": crack_menu_8,
                             "9": crack_menu_9,
                             "10": crack_menu_10,
-                            "11": crack_menu_11,
                             "b": back_crack
                            }
             try:
@@ -316,6 +293,10 @@ def crack_menu():
                 sys.exit()
                 
                   
+        
+#Hashcat Command Menu
+#def hashcat_command_menu(): #hashcat -a 0 -m 1000 /opt/hashcat/ntlm.txt /opt/wordlists/english-words/words-apha-lower.txt -O -w 3
+
         
 #Single Hash Menu
 def single_hash_menu():

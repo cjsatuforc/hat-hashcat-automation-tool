@@ -136,7 +136,7 @@ def wordlist_walk():
 
 #Rule Set Walk
 def rule_set_walk():
-    exten = '.rule'
+    exten = ''
     for dirpath, dirnames, files in os.walk(rule_set_directory):
         for rule_set_filename in files:
             if rule_set_filename.endswith(exten):

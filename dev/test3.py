@@ -34,7 +34,7 @@ topdir = '/opt/wordlists/less-than-1GB/'
 # The extension to search for
 exten = ''
 
-
+'''
 for dirpath, dirnames, files in os.walk(topdir):
     for name in files:
         if name.endswith(exten):
@@ -42,5 +42,22 @@ for dirpath, dirnames, files in os.walk(topdir):
             name = (os.path.join(dirpath, name))
             #print(name)
             subprocess.call("/opt/hashcat/hashcat -a 0 -m 5600 NetNTLMv2.hash -w 3 -O " + name, shell=True)
-            
+'''
 
+
+import sys
+import os
+
+#dirname = os.path.dirname(__file__)
+cwd = os.getcwd()
+l00t_pot_dir = os.path.join(cwd, 'l00t')
+
+print l00t_pot_dir
+pot = "test"
+pot = pot + '.pot'
+os.chdir(l00t_pot_dir)
+pot_create = open(pot, "w+")
+pot_create.close()
+os.chmod(pot, 0o755) #NOT A TYPO- Written in Octel Format
+print("File Created")
+                                                                        
