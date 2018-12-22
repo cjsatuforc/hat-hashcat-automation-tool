@@ -45,13 +45,18 @@ except NameError:
 os.system('clear')
 
 global hashcat_path
-hashcat_path = os.path.dirname(os.path.realpath(__file__))
+hashcat_path = "/opt/hat-hashcat-automation-tool/"
 
-global pot_path
-cwd = os.getcwd()
+#uneeded legacy code
+#global pot_path
+#cwd = os.getcwd()
 
 global l00t_pot_dir
 l00t_pot_dir = os.path.join(hashcat_path, 'l00t')
+
+global rules_dir
+rules_dir = os.path.join(hashcat_path, 'rules')
+
 
 #Banner
 def banner():
@@ -184,7 +189,12 @@ def hc_command_menu_6():
 def singular_wordlist_rule_set():
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_directory + cmd_defaults, shell=True)
     
+#Hashcat with Rule Sets - For rule 3 multiple custom Rules
+def multiple_wordlist_rule_set():
+    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + rule_set_arg + rule_set_file_2 + cmd_defaults, shell=True)
+#        subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + rule_set_arg + rule_set_file_2 + rule_set_arg + rule_set_file_3 + rule_set_arg + rule_set_file_4 + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
 
+        
 #Crack Menu 0 - Try all words lists lessthan <1GB -  Common Credentials
 def crack_menu_0():
     global wordlist_directory
@@ -209,9 +219,24 @@ def crack_menu_2():
     hashcat_command_line_menu()
     singular_wordlist()
         
-#Crack Menu 3 - To add
+#Crack Menu 3 - To add - Auto Quick Rule Test - Best64 -> d3ad0ne -> OneRuleToRuleThemAll oscommerce --> rockyou-3000
 def crack_menu_3():
-    os.system('clear')
+    global single_wordlist
+    global rule_set_file_1
+    global rule_set_file_2
+    global rule_set_file_3
+    global rule_set_file_4
+    global rule_set_file_5
+    single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    rule_set_file_1 = os.path.join(rules_dir, 'best64.rule')
+    rule_set_file_2 = os.path.join(rules_dir, 'd3ad0ne.rule')
+    rule_set_file_3 = os.path.join(rules_dir, 'OneRuleToRuleThemAll.rule')
+    rule_set_file_4 = os.path.join(rules_dir, 'oscommerce.rule')
+    rule_set_file_5 = os.path.join(rules_dir, 'rockyou-30000.rule')
+    pot_file()
+    hashcat_command_line_menu()
+    multiple_wordlist_rule_set()
+                            
         
 #Crack Menu 4 - Try all words lists 4GB+ - (will take a while to cache each wordlist priot to testing)
 def crack_menu_4():
@@ -250,7 +275,7 @@ def crack_menu_8():
     global single_wordlist
     global rule_set_directory
     single_wordlist = " /opt/wordlists/rockyou.txt "
-    rule_set_directory = " /opt/hashcat/rules/best64.rule "
+    rule_set_directory = "/opt/hashcat/rules/best64.rule"
     pot_file()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
@@ -260,7 +285,7 @@ def crack_menu_9():
     global single_wordlist
     global rule_set_directory
     single_wordlist = "/opt/wordlists/rockyou.txt"
-    rule_set_directory = " /opt/hashcat/rules/d3ad0ne.rule"
+    rule_set_directory = "/opt/hashcat/rules/d3ad0ne.rule"
     pot_file()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
@@ -269,8 +294,8 @@ def crack_menu_9():
 def crack_menu_10():
     global single_wordlist
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt"
-    rule_set_directory = " /opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
+    single_wordlist = "/opt/wordlists/rockyou.txt "
+    rule_set_directory = "/opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
     pot_file()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
@@ -325,7 +350,7 @@ def crack_menu():
             print("0) Automated Testing - Try all words lists less than <1GB - Common Credentials")
             print("1) Automated Testing - Try all words lists between 1GB - <4GB")
             print("2) Automated Testing - Try crackstation list (15GB) - (Runtime ~2min 5sec)")
-            print("3) Automated Testing - New to add")
+            print("3) Auto Quick Rule Test - Best64 -> d3ad0ne -> OneRuleToRuleThemAll oscommerce --> rockyou-3000 --> crackstation")
             print("4) Automated Testing - Try all words lists 4GB+ - (will take a while to cache each wordlist priot to testing) - Comprehensive Scan")
             print("5) Automated Testing - Try Oxford Dictionary(min >=8chars) + Starting with UPPER Case + upto 4 ANY Characters on RIGHT SIDE - Use for Corporate Clients")
             print("6) Automated Testing - Try Oxford Dictionary(min >=8chars) + Starting with UPPER Case + upto 4 ANY Characters on LEFT SIDE - Use for Corporate Clients")
