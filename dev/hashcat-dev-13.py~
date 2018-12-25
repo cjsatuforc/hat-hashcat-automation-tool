@@ -4,7 +4,7 @@
 #Latest update - Pre-Release
 #Last Modified - 20/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.11
+#Version 0.13
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
@@ -24,7 +24,8 @@ import shlex
 import subprocess
 import sys
 import time
-
+from os import listdir
+from os.path import isfile, join
 
 #Define Colours
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
@@ -41,15 +42,17 @@ try:
 except NameError:
     pass
     
+#Both Valuse set to false on program start, which is triggered is used for the pot file and hash upload functionality
+global file_hash_boolean
+file_hash_boolean = False
+global single_hash_boolean
+single_hash_boolean = False
+
 #Initally Clear the Screen
 os.system('clear')
 
 global hashcat_path
 hashcat_path = "/opt/hat-hashcat-automation-tool/"
-
-#uneeded legacy code
-#global pot_path
-#cwd = os.getcwd()
 
 global l00t_pot_dir
 l00t_pot_dir = os.path.join(hashcat_path, 'l00t')
@@ -57,6 +60,8 @@ l00t_pot_dir = os.path.join(hashcat_path, 'l00t')
 global rules_dir
 rules_dir = os.path.join(hashcat_path, 'rules')
 
+global hash_upload_dir
+hash_upload_dir = os.path.join(hashcat_path, 'hash_upload')
 
 #Banner
 def banner():
@@ -74,30 +79,29 @@ def banner():
     prGreen("                              .|,|_.ed88888888***```````**888L               ")
     prGreen("                              `*YY*****'                                     ")
      
-#os.system('whoami')
-#subprocess.call("while true; do printf '%s\r' "$(date)"; sleep 1; done", shell=True)
-#date()
-
-#Date
-#def date():
-#    print("Date: ", datetime.datetime.now())
-
-#Pot File
+#Pot File - Create a New Potfile when using a Single wordlist
 def pot_file():
-    global pot
-    pot_name = raw_input("Enter Name for pot file, or Press 1 for same name as filename previously selected" +'\n')
-    try:
-        if pot_name == "1":
-            pot = single_hash_file_name.lower()
-            pot = pot + '.pot '
-#No need to create a file here as hascat will automajically make one and therefore we will have duplicates
-        else:
-            print(pot_name)
-            pot = pot_name.lower()
-            pot = pot + ".pot "
-            hashcat_command_line_menu()
-    except KeyboardInterrupt:
-        sys.exit()
+    global pot_file
+    global hash_path_and_name
+    pot_name = raw_input("Enter Name for pot file, or Press 1 for the same name as filename previously selected" +'\n')
+    if single_hash_boolean == True and pot_name == '1':
+        pot = single_hash_file_name.lower()
+        pot = pot + '.pot ' #No need to create a file here as hashcat will automajically make one and therefore we will have duplicates
+        hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
+        pot_file = ' --potfile-path ' + pot
+        return pot
+    elif file_hash_boolean == True and pot_name == '1':
+        pot = hash_input.lower()
+        pot = pot + '.pot '
+        hash_path_and_name = hash_abs_path
+    else:
+        print("boo")
+        #else:
+        #    print(pot_name)
+        #    pot = pot_name.lower()
+        #    pot = pot + '.pot '
+        #    hashcat_command_line_menu()
+    
 
     
 #Hashcat Command Line Menu
@@ -110,11 +114,10 @@ def hashcat_command_line_menu():
     global four_any_characters
     global four_numbers
     global hash_type_NetNTLMv2
-    global hash_path_and_name
     global increment
     global increment_min
     global increment_max
-    global pot_file
+    #global pot_file
     global rule_set_arg
     global three_any_characters
     os.system('clear')
@@ -128,14 +131,12 @@ def hashcat_command_line_menu():
     increment_max = ' --increment-max 3 '
     four_numbers = " ?d?d?d?d "
     hash_type_NetNTLMv2 = ' -m 5600 '
-    hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
-    pot_file = ' --potfile-path ' + pot
+#   pot_file = ' --potfile-path ' + pot
     cmd_defaults = ' -w 3 -O '
     three_any_characters = " ?a?a?a "
     rule_set_arg = ' -r '
     print("----Running Hashcat Command----")
-    return
-
+    
 
 #Straight Wordlist_walk
 def wordlist_walk():
@@ -146,28 +147,6 @@ def wordlist_walk():
                 abs_wordlist = (os.path.join(dirpath, wordlist_filename))
                 subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
 
-''' -Original working code - do NOT delete
-#Rule Set Walk
-def rule_set_walk():
-    exten = '.rule'
-    for dirpath, dirnames, files in os.walk(rule_set_directory):
-        for rule_set_filename in files:
-            if rule_set_filename.endswith(exten):
-                abs_rule_set = (os.path.join(dirpath, rule_set_filename))
-                subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
-'''
-
-''' - Testing
-#Rule Set Walk
-def rule_set_walk():
-    exten = '*.rule'
-    for root, dirs, files in os.walk(rule_set_directory):
-        for rule_set_filename in fnmatch.filter(files, exten):
-            if rule_set_filename.endswith(exten):
-                abs_rule_set = (os.path.join(dirpath, rule_set_filename))
-                subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
-'''
-
 #Rule Set Walk
 def rule_set_walk():
     exten = '*.rule'
@@ -176,17 +155,14 @@ def rule_set_walk():
             abs_rule_set = (os.path.join(root, filename))
             subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
 
-
-#Single Wordlist Testing
+#Single Wordlist
 def singular_wordlist():
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + cmd_defaults, shell=True)
-
 
 #Single list for menu 5 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on RIGHT SIDE
 def hc_command_menu_5():
     #print(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + four_any_characters + cmd_defaults + increment + increment_min + increment_max)
     subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + three_any_characters + cmd_defaults + increment + increment_min + increment_max, shell=True)
-
 
 #Single list for menu 6 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on LEFT SIDE
 def hc_command_menu_6():
@@ -255,9 +231,8 @@ def crack_menu_3():
     rule_set_file_5 = os.path.join(rules_dir, 'rockyou-30000.rule')
     pot_file()
     hashcat_command_line_menu()
-    multiple_wordlist_rule_set()
-                            
-        
+    multiple_wordlist_rule_set()    
+    
 #Crack Menu 4 - Try all words lists 4GB+ - (will take a while to cache each wordlist prior to testing)
 def crack_menu_4():
     global wordlist_directory
@@ -410,6 +385,8 @@ def crack_menu():
 #Single Hash Menu
 def single_hash_menu():
     global single_hash_file_name
+    global single_hash_boolean
+    single_hash_boolean = True
     os.system('clear')
     banner()
     print("Example NetNTLMv2 Hash")
@@ -433,17 +410,38 @@ def single_hash_menu():
     crack_menu()
 
     
-#Hash File Upload Menu - TODO
+#Hash File Upload Menu
 def hash_from_file():
-    print("Work in Progress")
-    sys.exit()
+    global hash_abs_path
+    global hash_input
+    file_hash = True
+    os.system('clear')
+    banner()
+    print("Add file into hash_upload directory " + hash_upload_dir + " (If not done so already)")
+    print("Below are the files currently available in the file uploads directory")
+    for list_dir in os.listdir('../hash_upload/'):
+            print list_dir
+            hash_input = raw_input("Select the file from the above list to be uploaded: ")
+            os.chdir(hash_upload_dir)
+            if (os.path.isfile(hash_input)):
+                print("Hash File %s found and accepted..." % hash_input)
+                hash_abs_path = (os.path.join(hash_upload_dir, hash_input))
+                print("Absolute Path of hash file is: ") + hash_abs_path
+                crack_menu()
+                #upload_pot_file()
+                #hashcat_command_line_menu()
+                
+            else:
+                print("Error: %s file not found" % hash_input)
+    
+                
+                         
+        
 
 #Exit system
 def program_exit():
     sys.exit()
 
-    
-            
 #MainMenu
 
 def main_menu():
@@ -468,3 +466,18 @@ def main_menu():
 
 if __name__ == '__main__':
     main_menu()
+
+
+
+''' Notes Start
+
+>>> "Hello {}, my name is {}".format('john', 'mike')
+'Hello john, my name is mike'.
+
+>>> "{1}, {0}".format('world', 'Hello')
+'Hello, world'
+
+>>> "{greeting}, {}".format('world', greeting='Hello')
+'Hello, world'
+
+Notes End '''

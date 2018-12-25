@@ -4,7 +4,7 @@
 #Latest update - Pre-Release
 #Last Modified - 20/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.11
+#Version 0.12
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
@@ -24,7 +24,8 @@ import shlex
 import subprocess
 import sys
 import time
-
+from os import listdir
+from os.path import isfile, join
 
 #Define Colours
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
@@ -57,6 +58,8 @@ l00t_pot_dir = os.path.join(hashcat_path, 'l00t')
 global rules_dir
 rules_dir = os.path.join(hashcat_path, 'rules')
 
+global hash_upload_dir
+hash_upload_dir = os.path.join(hashcat_path, 'hash_upload')
 
 #Banner
 def banner():
@@ -255,9 +258,8 @@ def crack_menu_3():
     rule_set_file_5 = os.path.join(rules_dir, 'rockyou-30000.rule')
     pot_file()
     hashcat_command_line_menu()
-    multiple_wordlist_rule_set()
-                            
-        
+    multiple_wordlist_rule_set()    
+    
 #Crack Menu 4 - Try all words lists 4GB+ - (will take a while to cache each wordlist prior to testing)
 def crack_menu_4():
     global wordlist_directory
@@ -435,8 +437,28 @@ def single_hash_menu():
     
 #Hash File Upload Menu - TODO
 def hash_from_file():
+    os.system('clear')
+    banner()
     print("Work in Progress")
-    sys.exit()
+    print("Add file into hash_upload directory " + hash_upload_dir + " (If not done so already)")
+    print("Below are the files currently available in the file uploads directory")
+    for list_dir in os.listdir('../hash_upload/'):
+            print list_dir
+            hash_upload = raw_input("Select the file from the above list to be uploaded: ")
+            os.chdir(hash_upload_dir)
+#           if ( not os.path.isfile(hash_upload)):
+#                print("Error: %s file not found" % hash_upload)
+#            else:
+#                print("Hash File %s found and accepted..." % hash_upload)
+            if (os.path.isfile(hash_upload)):
+                print("Hash File %s found and accepted..." % hash_upload)
+                hash_abs_path == (os.path.join(hash_upload_dir, hash_upload))
+                print("Absolute Path of hash file is: " + hash_abs_path
+            else:
+                print("Error: %s file not found" % hash_upload)
+                
+                         
+        
 
 #Exit system
 def program_exit():
@@ -468,3 +490,18 @@ def main_menu():
 
 if __name__ == '__main__':
     main_menu()
+
+
+
+''' Notes Start
+
+>>> "Hello {}, my name is {}".format('john', 'mike')
+'Hello john, my name is mike'.
+
+>>> "{1}, {0}".format('world', 'Hello')
+'Hello, world'
+
+>>> "{greeting}, {}".format('world', greeting='Hello')
+'Hello, world'
+
+Notes End '''
