@@ -1,8 +1,4 @@
-
 #!/usr/bin/env python
-
-import subprocess
-import os
 
 #working 1
 #string = subprocess.call("ls " + "-l" + " /opt/wordlists/less-than-1GB", shell=True)
@@ -15,7 +11,7 @@ import os
 #file = "hashcat-dev-1.py"
 #string = subprocess.call("find /home/awer -type f -iname " + file, shell=True)
 #print string
-
+'''
 global foo
 global bar
 foo = False
@@ -38,3 +34,16 @@ def test2():
        print("foo == False, power on")
 
 test1()
+'''
+
+
+from os import walk
+import os
+
+mypath = '/opt/hat-hashcat-automation-tool/hash_upload'
+ignore = '~'
+
+for root, dirs, files in os.walk(mypath):
+    for file in files:
+        if not file.endswith(ignore):
+            print(os.path.join(root, file))

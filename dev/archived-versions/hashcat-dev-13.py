@@ -424,18 +424,17 @@ def hash_from_file():
     print("Below are the files currently available in the file uploads directory")
     for list_dir in os.listdir('../hash_upload/'):
             print list_dir
-            hash_input = raw_input("Select the file from the above list to be uploaded: ")
-            os.chdir(hash_upload_dir)
-            if (os.path.isfile(hash_input)):
-                print("Hash File %s found and accepted..." % hash_input)
-                hash_abs_path = (os.path.join(hash_upload_dir, hash_input))
-                print("Absolute Path of hash file is: ") + hash_abs_path
-                crack_menu()
+    hash_input = raw_input("Select the file from the above list to be uploaded: ")
+    os.chdir(hash_upload_dir)
+    if (os.path.isfile(hash_input)):
+        print("Hash File %s found and accepted..." % hash_input)
+        hash_abs_path = (os.path.join(hash_upload_dir, hash_input))
+        print("Absolute Path of hash file is: ") + hash_abs_path
+        crack_menu()
                 #upload_pot_file()
                 #hashcat_command_line_menu()
-                
-            else:
-                print("Error: %s file not found" % hash_input)
+    else:
+        print("Error: %s file not found" % hash_input)
     
                 
                          

@@ -4,7 +4,7 @@
 #Latest update - Pre-Release
 #Last Modified - 20/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.13
+#Version 0.15
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
@@ -88,22 +88,20 @@ def pot_file():
         pot = single_hash_file_name.lower()
         pot = pot + '.pot ' #No need to create a file here as hashcat will automajically make one and therefore we will have duplicates
         hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
-        pot_file = ' --potfile-path ' + pot
+        pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
         return pot
     elif file_hash_boolean == True and pot_name == '1':
         pot = hash_input.lower()
         pot = pot + '.pot '
         hash_path_and_name = hash_abs_path
-        pot_file = ' --potfile-path ' + pot
+        pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
         return pot
     else:
-        print("boo")
-        #else:
-        #    print(pot_name)
-        #    pot = pot_name.lower()
-        #    pot = pot + '.pot '
-        #    hashcat_command_line_menu()
-    
+        print(pot_name)
+        pot = pot_name.lower()
+        pot = pot + '.pot '
+        hashcat_command_line_menu()
+            
 
     
 #Hashcat Command Line Menu
@@ -170,7 +168,7 @@ def hc_command_menu_5():
 def hc_command_menu_6():
     subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + three_any_characters + wordlist_directory + cmd_defaults + increment + increment_min + increment_max, shell=True)
 
-#menu 7
+#Hashcat Dictionary wordlist with rules - Oxford Dictionary Starting with UPPER Case + {upto 4 Numbers LEFT SIDE, upto 4 numbers RIGHT SIDE}
 def hc_command_menu_7():
     #Four Numbers (Left Side)
     subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + four_numbers + wordlist_directory + cmd_defaults + increment, shell=True)
@@ -179,7 +177,7 @@ def hc_command_menu_7():
     
 #Hashcat with Rule Sets
 def singular_wordlist_rule_set():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_directory + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_directory + cmd_defaults, shell=True)
     
 #Hashcat with Rule Sets - For rule 3 multiple custom Rules
 def multiple_wordlist_rule_set():
@@ -189,9 +187,7 @@ def multiple_wordlist_rule_set():
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_4 + cmd_defaults, shell=True)
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
     
-#subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + rule_set_arg + rule_set_file_2 + rule_set_arg + rule_set_file_3 + rule_set_arg + rule_set_file_4 + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
 
-        
 #Crack Menu 0 - Try all words lists lessthan <1GB -  Common Credentials
 #Updated and merged all smaller wordlists into one file for more effcient testing (find . -name "*.txt" | xargs cat >> ./mergedfile.txt)  
 def crack_menu_0():
@@ -233,7 +229,7 @@ def crack_menu_3():
     rule_set_file_5 = os.path.join(rules_dir, 'rockyou-30000.rule')
     pot_file()
     hashcat_command_line_menu()
-    multiple_wordlist_rule_set()    
+    multiple_wordlist_rule_set()
     
 #Crack Menu 4 - Try all words lists 4GB+ - (will take a while to cache each wordlist prior to testing)
 def crack_menu_4():
@@ -266,13 +262,12 @@ def crack_menu_7():
     pot_file()
     hashcat_command_line_menu()
     hc_command_menu_7()
-                    
 
 #Crack Menu 8 - Rockyou with rule - Best64
 def crack_menu_8():
     global single_wordlist
     global rule_set_directory
-    single_wordlist = " /opt/wordlists/rockyou.txt "
+    single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/best64.rule"
     pot_file()
     hashcat_command_line_menu()
@@ -282,7 +277,7 @@ def crack_menu_8():
 def crack_menu_9():
     global single_wordlist
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt"
+    single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/d3ad0ne.rule"
     pot_file()
     hashcat_command_line_menu()
@@ -342,22 +337,22 @@ def crack_menu():
         while 1:
             print("")
             print("Hashcat Cracking Menu")
-            print("Only for NTLM or NetNTLM - WPA or WEP to DO")
-            print("0) Automated Testing - Try all words lists less than <1GB - Common Credentials - includes straight rockyou")
-            print("1) Automated Testing - Try all words lists between 1GB - <4GB")
-            print("2) Automated Testing - Try crackstation list (15GB) - (Runtime ~2min 5sec)")
-            print("3) Auto Quick Rule Test - Best64 -> d3ad0ne -> OneRuleToRuleThemAll oscommerce --> rockyou-3000")
-            print("4) Automated Testing - Try all words lists 4GB+ - (will take a while to cache each wordlist prior to testing) - Comprehensive Scan")
-            print("5) Automated Testing - Try Oxford Dictionary(min >=8chars) + Starting with UPPER Case + upto 3 ANY Characters on RIGHT SIDE - Use for Corporate Clients - (Runtime ~4min)")
-            print("6) Automated Testing - Try Oxford Dictionary(min >=8chars) + Starting with UPPER Case + upto 3 ANY Characters on LEFT SIDE - Use for Corporate Clients - (Runtime ~4min)")
-            print("7) Automated Testing - Try Oxford Dictionary Starting with UPPER Case + {upto 4 Numbers LEFT SIDE, upto 4 numbers RIGHT SIDE}")
-            print("8) Rockyou with rule - Best64 - (Runtime ~1sec)")
-            print("9) Rockyou with rule - d3ad0ne -(Runtime ~1sec)")
-            print("10) Rockyou with rule - OneRuleToRuleThemAll - (Runtime ~1sec)")
-            print("11) Rockyou with rule - KoreLogicRules (Thanks to KoreLogic.com)")
-            print("12) Rockyou with rule - oscommerce - (Runtime ~1sec)")
-            print("13) Rock you with rule - rockyou-30000 - (Runtime ~1sec)")
-            print("b) Back to Main Menu")
+            prLightGray("Only for NTLM or NetNTLM - WPA or WEP to DO")
+            prCyan("0) Automated Testing - Try all words lists less than <1GB - Common Credentials - includes straight rockyou")
+            prLightPurple("1) Automated Testing - Try all words lists between 1GB - <4GB")
+            prCyan("2) Automated Testing - Try crackstation list (15GB) - (Runtime ~2min 5sec)")
+            prLightPurple("3) Auto Quick Rule Test - Best64 -> d3ad0ne -> OneRuleToRuleThemAll oscommerce --> rockyou-3000")
+            prCyan("4) Automated Testing - Try all words lists 4GB+ - (will take a while to cache each wordlist prior to testing) - Comprehensive Scan")
+            prLightPurple("5) Automated Testing - Try Oxford Dictionary(>=8chars) + Starting with UPPER Case + upto 3 ANY Characters on RIGHT SIDE - Use for Corporate Clients - (Runtime ~4min)")
+            prCyan("6) Automated Testing - Try Oxford Dictionary(>=8chars) + Starting with UPPER Case + upto 3 ANY Characters on LEFT SIDE - Use for Corporate Clients - (Runtime ~4min)")
+            prLightPurple("7) Automated Testing - Try Oxford Dictionary Starting with UPPER Case + {upto 4 Numbers LEFT SIDE, upto 4 numbers RIGHT SIDE}")
+            prCyan("8) Rockyou with rule - Best64 - (Runtime ~20sec)")
+            prLightPurple("9) Rockyou with rule - d3ad0ne -(Runtime ~1hr 43sec)")
+            prCyan("10) Rockyou with rule - OneRuleToRuleThemAll - (Runtime ~2hr 30sec)")
+            prLightPurple("11) Rockyou with rule - KoreLogicRules (Thanks to KoreLogic.com)")
+            prCyan("12) Rockyou with rule - oscommerce - (Runtime ~1sec)")
+            prLightPurple("13) Rock you with rule - rockyou-30000 - (Runtime ~1sec)")
+            prRed("b) Back to Main Menu")
             crack_option = {"0": crack_menu_0,
                             "1": crack_menu_1,
                             "2": crack_menu_2,
@@ -422,24 +417,28 @@ def hash_from_file():
     banner()
     print("Add file into hash_upload directory " + hash_upload_dir + " (If not done so already)")
     print("Below are the files currently available in the file uploads directory")
-    for list_dir in os.listdir('../hash_upload/'):
-            print list_dir
-            hash_input = raw_input("Select the file from the above list to be uploaded: ")
-            os.chdir(hash_upload_dir)
+#Used for removing emacs created backup files ending with a tilde
+    ignore = '~'
+    for root, dirs, files in os.walk(hash_upload_dir):
+        for file in files:
+            if not file.endswith(ignore):
+                print(os.path.join(root, file))
+    hash_input = raw_input("Select the file from the above list to be uploaded: ")
+    os.chdir(hash_upload_dir)
+    try:
+        while 1:
             if (os.path.isfile(hash_input)):
                 print("Hash File %s found and accepted..." % hash_input)
                 hash_abs_path = (os.path.join(hash_upload_dir, hash_input))
-                print("Absolute Path of hash file is: ") + hash_abs_path
+                print("Absolute Path of hash file is: \n") + hash_abs_path
                 crack_menu()
-                #upload_pot_file()
-                #hashcat_command_line_menu()
-                
             else:
                 print("Error: %s file not found" % hash_input)
+                os.system('clear')
+    except KeyError:
+        os.system('clear')
+        pass
     
-                
-                         
-        
 
 #Exit system
 def program_exit():
@@ -451,9 +450,9 @@ def main_menu():
     try:
         while 1:
             banner()
-            print("\t(0) Input Singluar Hash")
-            print("\t(1) Input Hash from File")
-            print("\t(2) Exit")
+            prCyan("\t(0) Input Singluar Hash")
+            prLightPurple("\t(1) Input Hash from File")
+            prRed("\t(2) Exit")
             options = {"0": single_hash_menu,
                        "1": hash_from_file,
                        "2": program_exit,
@@ -482,5 +481,6 @@ if __name__ == '__main__':
 
 >>> "{greeting}, {}".format('world', greeting='Hello')
 'Hello, world'
+
 
 Notes End '''

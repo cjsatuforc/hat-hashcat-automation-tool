@@ -16,7 +16,7 @@ import os
 #string = subprocess.call("find /home/awer -type f -iname " + file, shell=True)
 #print string
 
-#global foo
+global foo
 global bar
 foo = False
 bar = True
