@@ -49,7 +49,9 @@ global single_hash_boolean
 single_hash_boolean = False
 
 #Used to allow multiple tests via the menu with the same pot file already selected.
-global pot_boolean
+
+#Moved to inside the pot_function as per irc suggestion
+#global pot_boolean
 pot_boolean = False
 
 #Initally Clear the Screen
@@ -87,14 +89,15 @@ def banner():
      
 #Pot File - Create a New Potfile when using a Single wordlist or the File Upload Functionality.
 def pot_function():
+    global pot_boolean
     global pot_file
     global hash_path_and_name
     pot_name = input("Enter Name for pot file, or Press 1 for the same name as filename previously selected" +'\n')
 #Added Pot Boolean Functionality to allow for multiple tests with the SAME hash and pot settings
 #After the first iteration the pot_boolean becomes true and therefore we call on the settings already provided.
     if pot_boolean == True and pot_name == '1':
-        input('Hurrah!')
-    if single_hash_boolean == True and pot_name == '1':
+        input('Hurrah!')        
+    elif single_hash_boolean == True and pot_name == '1':
         pot = single_hash_file_name.lower()
         pot = pot + '.pot ' #No need to create a file here as hashcat will automajically make one and therefore we will have duplicates
         hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
