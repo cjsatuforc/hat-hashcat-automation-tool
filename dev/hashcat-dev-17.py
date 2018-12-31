@@ -67,6 +67,7 @@ rules_dir = os.path.join(hashcat_path, 'rules')
 global hash_upload_dir
 hash_upload_dir = os.path.join(hashcat_path, 'hash_upload')
 
+
 #Banner
 def banner():
     prGreen("                                                                             ")
@@ -82,9 +83,10 @@ def banner():
     prGreen("                                       __..eed8888888888eee..                ")
     prGreen("                              .|,|_.ed88888888***```````**888L               ")
     prGreen("                              `*YY*****'                                     ")
+    print("")
      
 #Pot File - Create a New Potfile when using a Single wordlist or the File Upload Functionality.
-def pot_file():
+def pot_function():
     global pot_file
     global hash_path_and_name
     pot_name = input("Enter Name for pot file, or Press 1 for the same name as filename previously selected" +'\n')
@@ -202,7 +204,7 @@ def multiple_wordlist_rule_set():
 def crack_menu_0():
     global single_wordlist
     single_wordlist = "/opt/wordlists/less-than-1GB/merged_file_uniq.txt"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     singular_wordlist()
 
@@ -210,7 +212,7 @@ def crack_menu_0():
 def crack_menu_1():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/1GB-4GB/"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     wordlist_walk()
                 
@@ -218,7 +220,7 @@ def crack_menu_1():
 def crack_menu_2():
     global single_wordlist
     single_wordlist = "/opt/wordlists/4GB+/crackstation.txt"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     singular_wordlist()
         
@@ -236,7 +238,7 @@ def crack_menu_3():
     rule_set_file_3 = os.path.join(rules_dir, 'OneRuleToRuleThemAll.rule')
     rule_set_file_4 = os.path.join(rules_dir, 'oscommerce.rule')
     rule_set_file_5 = os.path.join(rules_dir, 'rockyou-30000.rule')
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     multiple_wordlist_rule_set()
     
@@ -244,7 +246,7 @@ def crack_menu_3():
 def crack_menu_4():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/4GB+/"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     wordlist_walk()
 
@@ -252,7 +254,7 @@ def crack_menu_4():
 def crack_menu_5():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/words.txt"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     hc_command_menu_5()
 
@@ -260,7 +262,7 @@ def crack_menu_5():
 def crack_menu_6():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/words_first_letter_upper.txt"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     hc_command_menu_6()
                 
@@ -268,7 +270,7 @@ def crack_menu_6():
 def crack_menu_7():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/words_first_letter_upper.txt"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     hc_command_menu_7()
 
@@ -278,7 +280,7 @@ def crack_menu_8():
     global rule_set_directory
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/best64.rule"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -288,7 +290,7 @@ def crack_menu_9():
     global rule_set_directory
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/d3ad0ne.rule"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
     
@@ -298,7 +300,7 @@ def crack_menu_10():
     global rule_set_directory
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -308,7 +310,7 @@ def crack_menu_11():
     global rule_set_directory
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/KoreLogicRules/"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     rule_set_walk()
 
@@ -318,7 +320,7 @@ def crack_menu_12():
     global rule_set_directory
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/oscommerce.rule"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -328,10 +330,20 @@ def crack_menu_13():
     global rule_set_directory
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/rockyou-30000.rule"
-    pot_file()
+    pot_function()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
-                                
+
+#Crack Menu 14 - Rockyou with Hob0Rules -> Quick Test {hob064.rule} -> Comprehensive Test {d3adhob0.rule}
+def crack_menu_14():
+    global single_wordlist
+    global rule_set_directory
+    single_wordlist = "/opt/wordlists/rockyou.txt "
+    rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/hob0Rules/"
+    pot_function()
+    hashcat_command_line_menu()
+    rule_set_walk()
+        
 #Crack Menu (Back Crack) - go back one stage...
 def back_crack():
     os.system('clear')
@@ -347,7 +359,7 @@ def crack_menu():
             print("")
             print("Hashcat Cracking Menu")
             prLightGray("Only for NTLM or NetNTLM - WPA or WEP to DO")
-            prCyan("0) Automated Testing - Custom Common Credentials - includes rockyou - {Corporate Scan}")
+            prCyan("0) Automated Testing - Custom Common Credentials - includes rockyou, hashkiller - {Corporate Scan}")
             prLightPurple("1) Automated Testing - All words lists between 1GB - <4GB - {Comprehensive Scan}")
             prCyan("2) Automated Testing - Crackstation list (15GB) - (Runtime ~2min 5sec) - {General Scan}")
             prLightPurple("3) Auto Quick Rule Test - Best64 -> d3ad0ne -> OneRuleToRuleThemAll oscommerce --> rockyou-3000 - {Corporate Scan}")
@@ -360,7 +372,8 @@ def crack_menu():
             prCyan("10) Rockyou with rule - OneRuleToRuleThemAll - (Runtime ~2hr 30sec)")
             prLightPurple("11) Rockyou with rule - KoreLogicRules (Thanks to KoreLogic.com)")
             prCyan("12) Rockyou with rule - oscommerce - (Runtime ~1sec)")
-            prLightPurple("13) Rock you with rule - rockyou-30000 - (Runtime ~1sec)")
+            prLightPurple("13) Rockyou with rule - rockyou-30000 - (Runtime ~1sec)")
+            prCyan("14) Rockyou with Hob0Rules -> Quick Test {hob064.rule} -> Comprehensive Test {d3adhob0.rule}")
             prRed("b) Back to Main Menu")
             crack_option = {"0": crack_menu_0,
                             "1": crack_menu_1,
@@ -376,6 +389,7 @@ def crack_menu():
                             "11": crack_menu_11,
                             "12": crack_menu_12,
                             "13": crack_menu_13,
+                            "14": crack_menu_14,
                             "b": back_crack
                            }
             try:
@@ -387,7 +401,6 @@ def crack_menu():
                 sys.exit()
                 
                   
-        
 #Single Hash Menu
 def single_hash_menu():
     global single_hash_file_name
@@ -425,13 +438,15 @@ def hash_from_file():
     os.system('clear')
     banner()
     print("Add file into hash_upload directory " + hash_upload_dir + " (If not done so already)")
-    print("Below are the files currently available in the file uploads directory")
+    print("Below are the files currently available in the file uploads directory..")
+    print("")
 #Used for removing emacs created backup files ending with a tilde
     ignore = '~'
     for root, dirs, files in os.walk(hash_upload_dir):
         for file in files:
             if not file.endswith(ignore):
                 print(os.path.join(root, file))
+    print("")
     hash_input = input("Select the file from the above list to be uploaded: ")
     os.chdir(hash_upload_dir)
     try:
