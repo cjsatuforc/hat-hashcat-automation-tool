@@ -4,7 +4,7 @@
 #Latest update - Pre-Release
 #Last Modified - 20/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.18
+#Version 0.19
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
@@ -43,29 +43,22 @@ except NameError:
     pass
     
 #Both Values are set to false on program start. This is used to trigger the pot file and hash upload functionality.
-global file_hash_boolean
+#global file_hash_boolean
 file_hash_boolean = False
-global single_hash_boolean
+#global single_hash_boolean
 single_hash_boolean = False
 
 #Used to allow multiple tests via the menu with the same pot file already selected.
-
-#Global pot_boolean now resides inside the pot_function function. 
+#Note Global pot_boolean resides inside the pot_function() function block. 
 pot_boolean = False
 
 #Initally Clear the Screen
 os.system('clear')
 
-global hashcat_path
+#Declare Paths
 hashcat_path = "/opt/hat-hashcat-automation-tool/"
-
-global l00t_pot_dir
 l00t_pot_dir = os.path.join(hashcat_path, 'l00t')
-
-global rules_dir
 rules_dir = os.path.join(hashcat_path, 'rules')
-
-global hash_upload_dir
 hash_upload_dir = os.path.join(hashcat_path, 'hash_upload')
 
 
@@ -86,15 +79,19 @@ def banner():
     prGreen("                              `*YY*****'                                     ")
     print("")
      
+
+
 #Pot File - Create a New Potfile when using a Single wordlist or the File Upload Functionality.
 def pot_function():
     global pot_boolean
     global pot_file
     global hash_path_and_name
+    global single_hash_file_name
+    global hash_abs_path
     pot_name = input("Enter Name for pot file, or Press 1 for the same name as filename previously selected" +'\n')
 #Added Pot Boolean Functionality to allow for multiple tests with the SAME hash and pot settings
 #After the first iteration the pot_boolean becomes true and therefore we call on the settings already provided.
-    if pot_boolean == True and pot_name == '1': #do nothing inside this funcation as all information already gathered.        
+    if pot_boolean == True and pot_name == '1': #do nothing and move on as all information has already been provided.        
         print("")
     elif single_hash_boolean == True and pot_name == '1':
         pot = single_hash_file_name.lower()
@@ -102,14 +99,14 @@ def pot_function():
         hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
         pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
         pot_boolean = True
-        return pot
+#       return pot
     elif file_hash_boolean == True and pot_name == '1':
         pot = hash_input.lower()
         pot = pot + '.pot '
         hash_path_and_name = hash_abs_path
         pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
         pot_boolean = True
-        return pot
+#       return pot
     else:
         print(pot_name)
         pot = pot_name.lower()
@@ -148,6 +145,7 @@ def hashcat_command_line_menu():
     rule_set_arg = ' -r '
     print("----Running Hashcat Command----")
     
+
 
 #Straight Wordlist_walk
 def wordlist_walk():
@@ -199,6 +197,7 @@ def multiple_wordlist_rule_set():
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
     
 
+
 #Crack Menu 0 - Try all words lists lessthan <1GB -  Common Credentials
 #Updated and merged all smaller wordlists into one file for more effcient testing (find . -name "*.txt" | xargs cat >> ./mergedfile.txt)  
 def crack_menu_0():
@@ -208,6 +207,7 @@ def crack_menu_0():
     hashcat_command_line_menu()
     singular_wordlist()
 
+ 
 #Crack Menu 1 - Try all words lists between 1GB - <4GB
 def crack_menu_1():
     global wordlist_directory
@@ -352,13 +352,24 @@ def back_crack():
 
 #Cracking Menu
 def crack_menu():
+    global file_hash_boolean
+    global single_hash_boolean
+    global hash_abs_path
     os.system('clear')
     banner()
     try:
         while 1:
+            if single_hash_boolean == True:
+                print("")
+                print("--==Hashcat Single Hash Cracking Menu==--")
+                print("")
+            elif file_hash_boolean == True:
+                print("")
+                print("--==Hashcat Multi Hash Cracking Menu==--")
+                print("Hash file selected for cracking is: ")
+                prYellow(hash_abs_path)
             print("")
-            print("Hashcat Cracking Menu")
-            prLightGray("Only for NTLM or NetNTLM - WPA or WEP to DO")
+            prLightGray("Currently Only for NetNTLMv2 Hashes (NTLM / WPA / WEP to do")
             prCyan("0) Automated Testing - Custom Common Credentials - includes rockyou, hashkiller - {Corporate Scan}")
             prLightPurple("1) Automated Testing - All words lists between 1GB - <4GB - {Comprehensive Scan}")
             prCyan("2) Automated Testing - Crackstation list (15GB) - (Runtime ~2min 5sec) - {General Scan}")
@@ -434,6 +445,7 @@ def hash_from_file():
     global hash_abs_path
     global hash_input
     global file_hash_boolean
+    global hash_upload_dir
     file_hash_boolean = True
     os.system('clear')
     banner()

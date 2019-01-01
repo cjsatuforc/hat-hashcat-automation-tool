@@ -4,7 +4,7 @@
 #Latest update - Pre-Release
 #Last Modified - 20/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.18
+#Version 0.19
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
@@ -43,29 +43,22 @@ except NameError:
     pass
     
 #Both Values are set to false on program start. This is used to trigger the pot file and hash upload functionality.
-global file_hash_boolean
+#global file_hash_boolean
 file_hash_boolean = False
-global single_hash_boolean
+#global single_hash_boolean
 single_hash_boolean = False
 
 #Used to allow multiple tests via the menu with the same pot file already selected.
-
-#Global pot_boolean now resides inside the pot_function function. 
+#Note Global pot_boolean resides inside the pot_function() function block. 
 pot_boolean = False
 
 #Initally Clear the Screen
 os.system('clear')
 
-global hashcat_path
+#Declare Paths
 hashcat_path = "/opt/hat-hashcat-automation-tool/"
-
-global l00t_pot_dir
 l00t_pot_dir = os.path.join(hashcat_path, 'l00t')
-
-global rules_dir
 rules_dir = os.path.join(hashcat_path, 'rules')
-
-global hash_upload_dir
 hash_upload_dir = os.path.join(hashcat_path, 'hash_upload')
 
 
@@ -86,30 +79,36 @@ def banner():
     prGreen("                              `*YY*****'                                     ")
     print("")
      
+
+
 #Pot File - Create a New Potfile when using a Single wordlist or the File Upload Functionality.
 def pot_function():
     global pot_boolean
     global pot_file
     global hash_path_and_name
+    global single_hash_file_name
+    global hash_abs_path
     pot_name = input("Enter Name for pot file, or Press 1 for the same name as filename previously selected" +'\n')
 #Added Pot Boolean Functionality to allow for multiple tests with the SAME hash and pot settings
 #After the first iteration the pot_boolean becomes true and therefore we call on the settings already provided.
-    if pot_boolean == True and pot_name == '1': #do nothing inside this funcation as all information already gathered.        
+    if pot_boolean == True and pot_name == '1': #Re-check the value of the hash file and pot name as these may of changed since the last run. Handy to change hashes without exiting the program.        
         print("")
+        pot = hash_input.lower()
+        pot = pot + '.pot '
+        hash_path_and_name = hash_abs_path
+        pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
     elif single_hash_boolean == True and pot_name == '1':
         pot = single_hash_file_name.lower()
         pot = pot + '.pot ' #No need to create a file here as hashcat will automajically make one and therefore we will have duplicates
         hash_path_and_name = os.path.join(os.getcwd(), single_hash_file_name)
         pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
         pot_boolean = True
-        return pot
     elif file_hash_boolean == True and pot_name == '1':
         pot = hash_input.lower()
         pot = pot + '.pot '
         hash_path_and_name = hash_abs_path
         pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
         pot_boolean = True
-        return pot
     else:
         print(pot_name)
         pot = pot_name.lower()
@@ -142,12 +141,38 @@ def hashcat_command_line_menu():
     increment_min = ' --increment-min 1 '
     increment_max = ' --increment-max 3 '
     four_numbers = " ?d?d?d?d "
-    hash_type_NetNTLMv2 = ' -m 5600 '
+ #  hash_type_NetNTLMv2 = ' -m 5600 '
     cmd_defaults = ' -w 3 -O '
     three_any_characters = " ?a?a?a "
     rule_set_arg = ' -r '
     print("----Running Hashcat Command----")
     
+
+#Hash Mode Selection Menu
+def hash_mode_menu():
+    loop = True
+    global hash_type
+    while loop:
+        print("Input Hash Mode To Crack")
+        prCyan("\t(0) NTLM - A SAM Database Hash")
+        prLightPurple("\t(1) - NetNTLMv1 Hash AKA NTLMv1")
+        prCyan("\t(2) - NetNTLMv2 Hash AKA NTLMv2")
+        prRed("\t(3) Back")
+        hm_answer = input(": ")
+        if hm_answer == "0":
+            hash_type = ' -m 1000 '
+            return hash_type
+        elif hm_answer == "1":
+            hash_type = ' -m 5500 '
+            return hash_type
+        elif hm_answer == "2":
+            hash_type = ' -m 5600 '
+            return hash_type
+        elif hm_answer == "3":
+            crack_menu()
+        else:
+            input("You did not give a valid answer, press any key to try again or press 3 to go back")
+            os.system('clear')
 
 #Straight Wordlist_walk
 def wordlist_walk():
@@ -156,7 +181,7 @@ def wordlist_walk():
         for wordlist_filename in files:
             if wordlist_filename.endswith(exten):
                 abs_wordlist = (os.path.join(dirpath, wordlist_filename))
-                subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
+                subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
 
 #Rule Set Walk
 def rule_set_walk():
@@ -164,40 +189,41 @@ def rule_set_walk():
     for root, dirs, files in os.walk(rule_set_directory):
         for filename in fnmatch.filter(files, exten):
             abs_rule_set = (os.path.join(root, filename))
-            subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
+            subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
 
 #Single Wordlist
 def singular_wordlist():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + cmd_defaults, shell=True)
 
 #Single list for menu 5 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on RIGHT SIDE
 def hc_command_menu_5():
     #print(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + four_any_characters + cmd_defaults + increment + increment_min + increment_max)
-    subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + three_any_characters + cmd_defaults + increment + increment_min + increment_max, shell=True)
+    subprocess.call(app + attack_mode_inc_right + hash_type + hash_path_and_name + pot_file + wordlist_directory + three_any_characters + cmd_defaults + increment + increment_min + increment_max, shell=True)
 
 #Single list for menu 6 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on LEFT SIDE
 def hc_command_menu_6():
-    subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + three_any_characters + wordlist_directory + cmd_defaults + increment + increment_min + increment_max, shell=True)
+    subprocess.call(app + attack_mode_inc_left + hash_type + hash_path_and_name + pot_file + three_any_characters + wordlist_directory + cmd_defaults + increment + increment_min + increment_max, shell=True)
 
 #Hashcat Dictionary wordlist with rules - Oxford Dictionary Starting with UPPER Case + {upto 4 Numbers LEFT SIDE, upto 4 numbers RIGHT SIDE}
 def hc_command_menu_7():
     #Four Numbers (Left Side)
-    subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + four_numbers + wordlist_directory + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_left + hash_type + hash_path_and_name + pot_file + four_numbers + wordlist_directory + cmd_defaults + increment, shell=True)
     #Four Numbers (Right Side)
-    subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + four_numbers + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_right + hash_type + hash_path_and_name + pot_file + wordlist_directory + four_numbers + cmd_defaults + increment, shell=True)
     
 #Hashcat with Rule Sets
 def singular_wordlist_rule_set():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_directory + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_directory + cmd_defaults, shell=True)
     
 #Hashcat with Rule Sets - For rule 3 multiple custom Rules
 def multiple_wordlist_rule_set():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_2 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_3 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_4 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_2 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_3 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_4 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
     
+
 
 #Crack Menu 0 - Try all words lists lessthan <1GB -  Common Credentials
 #Updated and merged all smaller wordlists into one file for more effcient testing (find . -name "*.txt" | xargs cat >> ./mergedfile.txt)  
@@ -205,6 +231,7 @@ def crack_menu_0():
     global single_wordlist
     single_wordlist = "/opt/wordlists/less-than-1GB/merged_file_uniq.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist()
 
@@ -213,6 +240,7 @@ def crack_menu_1():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/1GB-4GB/"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     wordlist_walk()
                 
@@ -221,6 +249,7 @@ def crack_menu_2():
     global single_wordlist
     single_wordlist = "/opt/wordlists/4GB+/crackstation.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist()
         
@@ -239,6 +268,7 @@ def crack_menu_3():
     rule_set_file_4 = os.path.join(rules_dir, 'oscommerce.rule')
     rule_set_file_5 = os.path.join(rules_dir, 'rockyou-30000.rule')
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     multiple_wordlist_rule_set()
     
@@ -247,6 +277,7 @@ def crack_menu_4():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/4GB+/"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     wordlist_walk()
 
@@ -255,6 +286,7 @@ def crack_menu_5():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/words.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     hc_command_menu_5()
 
@@ -263,6 +295,7 @@ def crack_menu_6():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/words_first_letter_upper.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     hc_command_menu_6()
                 
@@ -271,6 +304,7 @@ def crack_menu_7():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/english-words/words_first_letter_upper.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     hc_command_menu_7()
 
@@ -281,6 +315,7 @@ def crack_menu_8():
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/best64.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -291,6 +326,7 @@ def crack_menu_9():
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/d3ad0ne.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
     
@@ -301,6 +337,7 @@ def crack_menu_10():
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -311,6 +348,7 @@ def crack_menu_11():
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/KoreLogicRules/"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     rule_set_walk()
 
@@ -321,6 +359,7 @@ def crack_menu_12():
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/oscommerce.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -331,6 +370,7 @@ def crack_menu_13():
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/rockyou-30000.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -341,6 +381,7 @@ def crack_menu_14():
     single_wordlist = "/opt/wordlists/rockyou.txt "
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/hob0Rules/"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     rule_set_walk()
         
@@ -352,13 +393,24 @@ def back_crack():
 
 #Cracking Menu
 def crack_menu():
+    global file_hash_boolean
+    global single_hash_boolean
+    global hash_abs_path
     os.system('clear')
     banner()
     try:
         while 1:
+            if single_hash_boolean == True:
+                print("")
+                print("--==Hashcat Single Hash Cracking Menu==--")
+                print("")
+            elif file_hash_boolean == True:
+                print("")
+                print("--==Hashcat Multi Hash Cracking Menu==--")
+                print("Hash file selected for cracking is: ")
+                prYellow(hash_abs_path)
             print("")
-            print("Hashcat Cracking Menu")
-            prLightGray("Only for NTLM or NetNTLM - WPA or WEP to DO")
+            prLightGray("Currently Only for NetNTLMv2 Hashes AKA (NTLMv2) {NTLM / WPA / WEP to do}")
             prCyan("0) Automated Testing - Custom Common Credentials - includes rockyou, hashkiller - {Corporate Scan}")
             prLightPurple("1) Automated Testing - All words lists between 1GB - <4GB - {Comprehensive Scan}")
             prCyan("2) Automated Testing - Crackstation list (15GB) - (Runtime ~2min 5sec) - {General Scan}")
@@ -434,6 +486,7 @@ def hash_from_file():
     global hash_abs_path
     global hash_input
     global file_hash_boolean
+    global hash_upload_dir
     file_hash_boolean = True
     os.system('clear')
     banner()
@@ -448,7 +501,7 @@ def hash_from_file():
             if not file.endswith(ignore):
                 print(os.path.join(root, file))
     print("")
-    hash_input = input("Select the file from the above list to be uploaded: ")
+    hash_input = input("Select the filename from the above list to be uploaded: ")
     os.chdir(hash_upload_dir)
     try:
         if (os.path.isfile(hash_input)):
@@ -470,7 +523,6 @@ def program_exit():
     sys.exit()
 
 #MainMenu
-
 def main_menu():
     try:
         while 1:
