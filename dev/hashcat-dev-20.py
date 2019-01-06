@@ -4,10 +4,11 @@
 #Latest update - Pre-Release
 #Last Modified - 20/12/2018
 #Python Hashcat Automated Password Recovery
-#Version 0.19
+#Version 0.20
 #Latest mod - N/A
 #Currenty working in python 2.7
 #Update to python 3 (to do)
+#Added Functionality for Cewl Lists
 
 #Useful Full commands
 /opt/hashcat/hashcat -a 6 -m 5600 NetNTLMv2.hash -w 3 /opt/wordlists/english-words/english-words/words_first_letter_upper.txt '?a?a?a?a' -O --increment
@@ -52,6 +53,9 @@ single_hash_boolean = False
 #Note Global pot_boolean resides inside the pot_function() function block. 
 pot_boolean = False
 
+#Used for supporting the cewl wordlists if standard wordlists are not getting results
+cewl_boolean = False
+
 #Initally Clear the Screen
 os.system('clear')
 
@@ -60,7 +64,7 @@ hashcat_path = "/opt/hat-hashcat-automation-tool/"
 l00t_pot_dir = os.path.join(hashcat_path, 'l00t')
 rules_dir = os.path.join(hashcat_path, 'rules')
 hash_upload_dir = os.path.join(hashcat_path, 'hash_upload')
-
+cewl_upload_dir = os.path.join(hashcat_path, 'cewl_wordlists')
 
 #Banner
 def banner():
@@ -88,6 +92,7 @@ def pot_function():
     global hash_path_and_name
     global single_hash_file_name
     global hash_abs_path
+    global cewl_boolean
     pot_name = input("Enter Name for pot file, or Press 1 for the same name as filename previously selected" +'\n')
 #Added Pot Boolean Functionality to allow for multiple tests with the SAME hash and pot settings
 #After the first iteration the pot_boolean becomes true and therefore we call on the settings already provided.
@@ -109,6 +114,11 @@ def pot_function():
         hash_path_and_name = hash_abs_path
         pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
         pot_boolean = True
+    elif cewl_boolean == True and pot_name == '1':
+        pot = hash_input.lower()
+        pot = pot + '.pot '
+        hash_path_and_name = hash_abs_path
+        pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
     else:
         print(pot_name)
         pot = pot_name.lower()
@@ -204,7 +214,12 @@ def multiple_wordlist_rule_set():
 #Updated and merged all smaller wordlists into one file for more effcient testing (find . -name "*.txt" | xargs cat >> ./mergedfile.txt)  
 def crack_menu_0():
     global single_wordlist
-    single_wordlist = "/opt/wordlists/less-than-1GB/merged_file_uniq.txt"
+    global default_cewl_file_output
+    global cewl_boolean
+    if cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    else:
+        single_wordlist = "/opt/wordlists/less-than-1GB/merged_file_uniq.txt"
     pot_function()
     hashcat_command_line_menu()
     singular_wordlist()
@@ -344,11 +359,37 @@ def crack_menu_14():
     pot_function()
     hashcat_command_line_menu()
     rule_set_walk()
-        
+
 #Crack Menu (Back Crack) - go back one stage...
 def back_crack():
     os.system('clear')
+    cewl_boolean = False # Added to allow the default for straight wordlist testing. # THIS ISNT WORKING FIX!!!!!!
     main_menu()
+
+#Cewl menu
+def cewl_menu_15():
+    global hash_input
+    global wordlist_directory
+    global cewl_boolean
+    global default_cewl_file_output
+    cewl_boolean = True
+    print("We will now make a wordlist based on the given website address")
+    cewl_url_input = input("Specify the website for collecting the wordlist in full including protocols and ports numbers if non standard: ")
+    cewl_app = "/usr/bin/cewl "
+    cewl_write = "-w "
+    cewl_verbose = " -v "
+    default_depth = "--depth 2 "
+    default_min_word_length = "--min_word_length 7 "
+    hash_input = hash_input + '.cewl-wordlist.txt'
+    default_cewl_file_output = os.path.join(cewl_upload_dir, hash_input)
+    print(hash_input)
+    print(cewl_app + default_depth + default_min_word_length + cewl_url_input + cewl_verbose + cewl_write + default_cewl_file_output)
+    subprocess.call(cewl_app + default_depth + default_min_word_length + cewl_url_input + cewl_verbose + cewl_write + default_cewl_file_output, shell=True)
+    cewl_wordlist_size = os.popen('wc -l ' + default_cewl_file_output).read()
+    os.system('clear')
+    prLightPurple("Amount of words written "), prCyan(cewl_wordlist_size)
+    
+    
 
 
 #Cracking Menu
@@ -356,6 +397,7 @@ def crack_menu():
     global file_hash_boolean
     global single_hash_boolean
     global hash_abs_path
+    global default_cewl_file_output
     os.system('clear')
     banner()
     try:
@@ -369,6 +411,11 @@ def crack_menu():
                 print("--==Hashcat Multi Hash Cracking Menu==--")
                 print("Hash file selected for cracking is: ")
                 prYellow(hash_abs_path)
+            elif cewl_boolean == True:
+                print("")
+                print("--==Hashcat Multi Hash Cewl Cracking Menu==--")
+                print("Cewl wordlist file in use is:")
+                prYellow(default_cewl_file_output)
             print("")
             prLightGray("Currently Only for NetNTLMv2 Hashes AKA (NTLMv2) {NTLM / WPA / WEP to do}")
             prCyan("0) Automated Testing - Custom Common Credentials - includes rockyou, hashkiller - {Corporate Scan}")
@@ -386,6 +433,7 @@ def crack_menu():
             prCyan("12) Rockyou with rule - oscommerce - (Runtime ~1sec)")
             prLightPurple("13) Rockyou with rule - rockyou-30000 - (Runtime ~1sec)")
             prCyan("14) Rockyou with Hob0Rules -> Quick Test {hob064.rule} -> Comprehensive Test {d3adhob0.rule}")
+            prLightPurple("15) Cewl wordlist")
             prRed("b) Back to Main Menu")
             crack_option = {"0": crack_menu_0,
                             "1": crack_menu_1,
@@ -402,6 +450,7 @@ def crack_menu():
                             "12": crack_menu_12,
                             "13": crack_menu_13,
                             "14": crack_menu_14,
+                            "15": cewl_menu_15,
                             "b": back_crack
                            }
             try:

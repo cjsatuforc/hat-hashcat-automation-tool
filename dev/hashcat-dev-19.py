@@ -141,7 +141,6 @@ def hashcat_command_line_menu():
     increment_min = ' --increment-min 1 '
     increment_max = ' --increment-max 3 '
     four_numbers = " ?d?d?d?d "
- #  hash_type_NetNTLMv2 = ' -m 5600 '
     cmd_defaults = ' -w 3 -O '
     three_any_characters = " ?a?a?a "
     rule_set_arg = ' -r '
