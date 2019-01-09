@@ -37,7 +37,7 @@ def prPurple(prt): print("\033[95m {}\033[00m" .format(prt))
 def prCyan(prt): print("\033[96m {}\033[00m" .format(prt))
 def prLightGray(prt): print("\033[97m {}\033[00m" .format(prt))
 
-# python2/3 compatability
+#Python2/3 compatability
 try:
     input = raw_input
 except NameError:
@@ -81,7 +81,7 @@ def banner():
     prGreen("                                       __..eed8888888888eee..                ")
     prGreen("                              .|,|_.ed88888888***```````**888L               ")
     prGreen("                              `*YY*****'                                     ")
-    print("")
+    print(" http://www.lukminer.net")
      
 
 
@@ -96,8 +96,12 @@ def pot_function():
     pot_name = input("Enter Name for pot file, or Press 1 for the same name as filename previously selected" +'\n')
 #Added Pot Boolean Functionality to allow for multiple tests with the SAME hash and pot settings
 #After the first iteration the pot_boolean becomes true and therefore we call on the settings already provided.
-    if pot_boolean == True and pot_name == '1': #Re-check the value of the hash file and pot name as these may of changed since the last run. Handy to change hashes without exiting the program.        
-        print("")
+    if pot_boolean == True and single_hash_boolean == True and pot_name == '1': #Re-check the value of the hash file and pot name as these may of changed since the last run. Handy to change hashes without exiting the program.       print("")
+        pot = hash_input.lower()
+        pot = pot + '.pot '
+        hash_path_and_name = single_hash_abs_path
+        pot_file = ' --potfile-path ' + os.path.join(l00t_pot_dir, pot)
+    elif pot_boolean == True and pot_name == '1' and file_hash_boolean == True:
         pot = hash_input.lower()
         pot = pot + '.pot '
         hash_path_and_name = hash_abs_path
@@ -156,7 +160,6 @@ def hashcat_command_line_menu():
     three_any_characters = " ?a?a?a "
     rule_set_arg = ' -r '
     print("----Running Hashcat Command----")
-    
 
 
 #Straight Wordlist_walk
@@ -167,6 +170,9 @@ def wordlist_walk():
             if wordlist_filename.endswith(exten):
                 abs_wordlist = (os.path.join(dirpath, wordlist_filename))
                 subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
+                time.sleep(5)
+                os.system('clear')
+                
 
 #Rule Set Walk
 def rule_set_walk():
@@ -175,30 +181,48 @@ def rule_set_walk():
         for filename in fnmatch.filter(files, exten):
             abs_rule_set = (os.path.join(root, filename))
             subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
+            time.sleep(5)
+            os.system('clear')
 
+            
 #Single Wordlist
 def singular_wordlist():
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + cmd_defaults, shell=True)
-
+    time.sleep(5)
+    os.system('clear')
+    #banner()
+    
 #Single list for menu 5 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on RIGHT SIDE
 def hc_command_menu_5():
     #print(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + four_any_characters + cmd_defaults + increment + increment_min + increment_max)
     subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + three_any_characters + cmd_defaults + increment + increment_min + increment_max, shell=True)
-
+    time.sleep(5)
+    os.system('clear')
+    #banner()
+    
 #Single list for menu 6 - Oxford Dictionary + Starting with UPPER Case + upto 4 ANY Characters on LEFT SIDE
 def hc_command_menu_6():
     subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + three_any_characters + wordlist_directory + cmd_defaults + increment + increment_min + increment_max, shell=True)
-
+    time.sleep(5)
+    os.system('clear')
+    #banner()
+    
 #Hashcat Dictionary wordlist with rules - Oxford Dictionary Starting with UPPER Case + {upto 4 Numbers LEFT SIDE, upto 4 numbers RIGHT SIDE}
 def hc_command_menu_7():
     #Four Numbers (Left Side)
     subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + four_numbers + wordlist_directory + cmd_defaults + increment, shell=True)
     #Four Numbers (Right Side)
     subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + four_numbers + cmd_defaults + increment, shell=True)
+    time.sleep(5)
+    os.system('clear')
+#   banner()
     
 #Hashcat with Rule Sets
 def singular_wordlist_rule_set():
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_directory + cmd_defaults, shell=True)
+    time.sleep(5)
+    os.system('clear')
+#   banner()
     
 #Hashcat with Rule Sets - For rule 3 multiple custom Rules
 def multiple_wordlist_rule_set():
@@ -207,22 +231,28 @@ def multiple_wordlist_rule_set():
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_3 + cmd_defaults, shell=True)
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_4 + cmd_defaults, shell=True)
     subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
-    
+    time.sleep(5)
+    os.system('clear')
+#   banner()
 
 
 #Crack Menu 0 - Try all words lists lessthan <1GB -  Common Credentials
-#Updated and merged all smaller wordlists into one file for more effcient testing (find . -name "*.txt" | xargs cat >> ./mergedfile.txt)  
+#Updated and merged all smaller wordlists into one file for more effcient testing (find . -name "*.txt" | xargs cat >> ./mergedfile.txt)
 def crack_menu_0():
     global single_wordlist
     global default_cewl_file_output
     global cewl_boolean
-    if cewl_boolean == True:
+    global file_hash_boolean
+    if cewl_boolean == True and file_hash_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif single_hash_boolean == True and cewl_boolean == True:
         single_wordlist = default_cewl_file_output
     else:
         single_wordlist = "/opt/wordlists/less-than-1GB/merged_file_uniq.txt"
     pot_function()
     hashcat_command_line_menu()
     singular_wordlist()
+    
 
 #Crack Menu 1 - Try all words lists between 1GB - <4GB
 def crack_menu_1():
@@ -248,7 +278,16 @@ def crack_menu_3():
     global rule_set_file_3
     global rule_set_file_4
     global rule_set_file_5
-    single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    global default_cewl_file_output
+    global hash_abs_path
+    if single_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
     rule_set_file_1 = os.path.join(rules_dir, 'best64.rule')
     rule_set_file_2 = os.path.join(rules_dir, 'd3ad0ne.rule')
     rule_set_file_3 = os.path.join(rules_dir, 'OneRuleToRuleThemAll.rule')
@@ -293,8 +332,17 @@ def crack_menu_7():
 #Crack Menu 8 - Rockyou with rule - Best64
 def crack_menu_8():
     global single_wordlist
+    global single_hash_boolean
+    global file_hash_boolean
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt "
+    if single_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hashcat/rules/best64.rule"
     pot_function()
     hashcat_command_line_menu()
@@ -303,8 +351,17 @@ def crack_menu_8():
 #Crack Menu 9 - Rockyou with rule - d3ad0ne
 def crack_menu_9():
     global single_wordlist
+    global single_hash_boolean
+    global file_hash_boolean
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt "
+    if single_hash_boolean == True and cewl_boolean == False:
+            single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+            single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+            single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+            single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hashcat/rules/d3ad0ne.rule"
     pot_function()
     hashcat_command_line_menu()
@@ -313,8 +370,17 @@ def crack_menu_9():
 #Crack Menu 10 - Rockyou with rule - OneRuleToRuleThemAll
 def crack_menu_10():
     global single_wordlist
+    global single_hash_boolean
+    global file_hash_boolean
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt "
+    if single_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
     pot_function()
     hashcat_command_line_menu()
@@ -323,8 +389,17 @@ def crack_menu_10():
 #Crack Menu 11 - Rockyou with rule - KoreLogicRules
 def crack_menu_11():
     global single_wordlist
+    global single_hash_boolean
+    global file_hash_boolean
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt "
+    if single_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/KoreLogicRules/"
     pot_function()
     hashcat_command_line_menu()
@@ -333,8 +408,17 @@ def crack_menu_11():
 #Crack Menu 12 - Rockyou with rule - oscommerce
 def crack_menu_12():
     global single_wordlist
+    global single_hash_boolean
+    global file_hash_boolean
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt "
+    if single_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/oscommerce.rule"
     pot_function()
     hashcat_command_line_menu()
@@ -343,8 +427,17 @@ def crack_menu_12():
 #Crack Menu 13 - Rockyou with rule - rockyou-30000
 def crack_menu_13():
     global single_wordlist
+    global single_hash_boolean
+    global file_hash_boolean
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt "
+    if single_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/rockyou-30000.rule"
     pot_function()
     hashcat_command_line_menu()
@@ -353,8 +446,17 @@ def crack_menu_13():
 #Crack Menu 14 - Rockyou with Hob0Rules -> Quick Test {hob064.rule} -> Comprehensive Test {d3adhob0.rule}
 def crack_menu_14():
     global single_wordlist
+    global single_hash_boolean
+    global file_hash_boolean
     global rule_set_directory
-    single_wordlist = "/opt/wordlists/rockyou.txt "
+    if single_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt " # Space added for correct argument spacing
+    elif single_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif file_hash_boolean == True and cewl_boolean == False:
+        single_wordlist = "/opt/wordlists/rockyou.txt "
+    elif file_hash_boolean == True and cewl_boolean == True:
+        single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/hob0Rules/"
     pot_function()
     hashcat_command_line_menu()
@@ -362,8 +464,13 @@ def crack_menu_14():
 
 #Crack Menu (Back Crack) - go back one stage...
 def back_crack():
+    global cewl_boolean
+    global single_hash_boolean
+    global file_hash_boolean
     os.system('clear')
-    cewl_boolean = False # Added to allow the default for straight wordlist testing. # THIS ISNT WORKING FIX!!!!!!
+    cewl_boolean = False # Needed to reset for new menu settings to be applied
+    single_hash_boolean = False # Needed to reset for new menu settings to be applied 
+    file_hash_boolean = False # Needed to reset for new menu settings to be applied 
     main_menu()
 
 #Cewl menu
@@ -372,7 +479,11 @@ def cewl_menu_15():
     global wordlist_directory
     global cewl_boolean
     global default_cewl_file_output
+    global single_hash_abs_path
+    global cewl_wordlist_size
     cewl_boolean = True
+    os.system('clear')
+    banner()
     print("We will now make a wordlist based on the given website address")
     cewl_url_input = input("Specify the website for collecting the wordlist in full including protocols and ports numbers if non standard: ")
     cewl_app = "/usr/bin/cewl "
@@ -380,42 +491,87 @@ def cewl_menu_15():
     cewl_verbose = " -v "
     default_depth = "--depth 2 "
     default_min_word_length = "--min_word_length 7 "
-    hash_input = hash_input + '.cewl-wordlist.txt'
+    if single_hash_boolean == True:
+        hash_input = single_hash_abs_path + '.cewl-wordlist.txt'
+    elif file_hash_boolean == True:
+        hash_input = hash_input + '.cewl-wordlist.txt' 
     default_cewl_file_output = os.path.join(cewl_upload_dir, hash_input)
     print(hash_input)
-    print(cewl_app + default_depth + default_min_word_length + cewl_url_input + cewl_verbose + cewl_write + default_cewl_file_output)
+    #print(cewl_app + default_depth + default_min_word_length + cewl_url_input + cewl_verbose + cewl_write + default_cewl_file_output)
     subprocess.call(cewl_app + default_depth + default_min_word_length + cewl_url_input + cewl_verbose + cewl_write + default_cewl_file_output, shell=True)
     cewl_wordlist_size = os.popen('wc -l ' + default_cewl_file_output).read()
     os.system('clear')
-    prLightPurple("Amount of words written "), prCyan(cewl_wordlist_size)
-    
-    
+    #banner()
+    #prLightPurple("Amount of words written "), prCyan(cewl_wordlist_size)
 
+#Run straigh Cewl Wordlist.
+def cewl_menu_16():
+    global single_wordlist
+    global default_cewl_file_output
+    global cewl_boolean
+    global file_hash_boolean
+    if cewl_boolean == True and file_hash_boolean == True:
+        single_wordlist = default_cewl_file_output
+    elif cewl_boolean == True and single_hash_boolean == True:
+        single_wordlist = default_cewl_file_output
+    else:
+        input("Cewl Wordlist not ran yet!, run cewl first, (Option 15)")
+        crack_menu()
+    pot_function()
+    hashcat_command_line_menu()
+    singular_wordlist()
+    #banner()    
 
 #Cracking Menu
 def crack_menu():
     global file_hash_boolean
     global single_hash_boolean
+    global single_hash_abs_path
     global hash_abs_path
     global default_cewl_file_output
+    global cewl_boolean
+    global cewl_wordlist_size
     os.system('clear')
-    banner()
+    #banner()
     try:
         while 1:
-            if single_hash_boolean == True:
+            if single_hash_boolean == True and not cewl_boolean == True:
+                banner()
                 print("")
-                print("--==Hashcat Single Hash Cracking Menu==--")
+                prPurple("--==Hashcat Single Hash Cracking Menu==--")
                 print("")
-            elif file_hash_boolean == True:
                 print("")
-                print("--==Hashcat Multi Hash Cracking Menu==--")
-                print("Hash file selected for cracking is: ")
-                prYellow(hash_abs_path)
-            elif cewl_boolean == True:
+                print(" Hash file created:")
+                prYellow(single_hash_abs_path)
+            elif single_hash_boolean == True and cewl_boolean == True:
+                banner()
                 print("")
-                print("--==Hashcat Multi Hash Cewl Cracking Menu==--")
-                print("Cewl wordlist file in use is:")
+                prPurple("--==Hashcat Single Hash Cewl Cracking Menu==--")
+                print("")
+                print("")
+                print(" Single Hash file in Use:")
+                prYellow(single_hash_abs_path)
+                print(" Cewl Wordlist in Use:")
                 prYellow(default_cewl_file_output)
+            elif file_hash_boolean == True and not cewl_boolean:
+                banner() # Currently display duplicates first time round, second time round it only shows one banner.. 
+                print("")
+                prPurple("--==Hashcat Multi Hash Cracking Menu==--")
+                print("")
+                print("")
+                print(" Hash file selected for cracking is: ")
+                prYellow(hash_abs_path)
+            elif file_hash_boolean == True and cewl_boolean == True:
+                banner() # Added after the call as still in the loop for aesthtics.
+                print("")
+                prPurple("--==Hashcat Multi Hash Cewl Cracking Menu==--")
+                print("")
+                print("")
+                print(" Hash file in use:")
+                prYellow(hash_abs_path)
+                print("")
+                print(" Amount of Cewl words written + Absolute Path: ")
+                prYellow(cewl_wordlist_size)
             print("")
             prLightGray("Currently Only for NetNTLMv2 Hashes AKA (NTLMv2) {NTLM / WPA / WEP to do}")
             prCyan("0) Automated Testing - Custom Common Credentials - includes rockyou, hashkiller - {Corporate Scan}")
@@ -426,14 +582,15 @@ def crack_menu():
             prLightPurple("5) Automated Testing - Oxford Dictionary(>=8chars) + Starting with UPPER Case + upto 3 ANY Characters on RIGHT SIDE - {Corporate Scan}")
             prCyan("6) Automated Testing - Oxford Dictionary(>=8chars) + Starting with UPPER Case + upto 3 ANY Characters on LEFT SIDE {Corporate Scan}")
             prLightPurple("7) Automated Testing - Oxford Dictionary Starting with UPPER Case + (upto 4 Numbers LEFT SIDE, upto 4 numbers RIGHT SIDE) - {Corporate Scan}")
-            prCyan("8) Rockyou with rule - Best64 - (Runtime ~20sec)")
-            prLightPurple("9) Rockyou with rule - d3ad0ne -(Runtime ~1hr 43sec)")
-            prCyan("10) Rockyou with rule - OneRuleToRuleThemAll - (Runtime ~2hr 30sec)")
-            prLightPurple("11) Rockyou with rule - KoreLogicRules (Thanks to KoreLogic.com)")
-            prCyan("12) Rockyou with rule - oscommerce - (Runtime ~1sec)")
-            prLightPurple("13) Rockyou with rule - rockyou-30000 - (Runtime ~1sec)")
-            prCyan("14) Rockyou with Hob0Rules -> Quick Test {hob064.rule} -> Comprehensive Test {d3adhob0.rule}")
+            prCyan("8) Rule Based - Rockyou or cewl - Best64 - (Runtime ~20sec)")
+            prLightPurple("9) Rule Based - Rockyou or cewl - d3ad0ne -(Runtime ~1hr 43sec)")
+            prCyan("10) Rule Based - Rockyou or cewl - OneRuleToRuleThemAll - (Runtime ~2hr 30sec)")
+            prLightPurple("11) Rule Based - Rockyou or cewl - KoreLogicRules (Thanks to KoreLogic.com)")
+            prCyan("12) Rule Based - Rockyou or cewl - oscommerce - (Runtime ~1sec)")
+            prLightPurple("13) Rule Based - Rockyou or cewl - rockyou-30000 - (Runtime ~1sec)")
+            prCyan("14) Rule Based - Rockyou or cewl -> Quick Test {hob064.rule} -> Comprehensive Test {d3adhob0.rule}")
             prLightPurple("15) Cewl wordlist")
+            prCyan("16) Run straight Cewl wordlist (Run option 15 first to activate)")
             prRed("b) Back to Main Menu")
             crack_option = {"0": crack_menu_0,
                             "1": crack_menu_1,
@@ -451,12 +608,15 @@ def crack_menu():
                             "13": crack_menu_13,
                             "14": crack_menu_14,
                             "15": cewl_menu_15,
+                            "16": cewl_menu_16,
                             "b": back_crack
                            }
             try:
                 selection = input("\nSelect an Option: ")
                 crack_option[selection]()
             except KeyError:
+                os.system('clear')
+                banner()
                 pass
     except KeyboardInterrupt:
                 sys.exit()
@@ -466,6 +626,7 @@ def crack_menu():
 def single_hash_menu():
     global single_hash_file_name
     global single_hash_boolean
+    global single_hash_abs_path
     single_hash_boolean = True
     os.system('clear')
     banner()
@@ -482,7 +643,8 @@ def single_hash_menu():
     print("You entered : " + '\n') + single_hash_string
     print("OK - Need to put the hash into a File...") # Put hash into a file
     single_hash_file_name = input("Enter a logical filename: ")
-    os.chdir(l00t_pot_dir)
+    single_hash_abs_path = (os.path.join(hash_upload_dir, single_hash_file_name))
+    os.chdir(hash_upload_dir)
     sh = open(single_hash_file_name, "w+")
     sh.write(single_hash_string)
     print("File Created")
