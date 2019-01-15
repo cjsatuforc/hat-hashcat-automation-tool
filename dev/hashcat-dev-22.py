@@ -151,7 +151,7 @@ def hashcat_command_line_menu():
     attack_mode_inc_right = ' -a 6 '
     attack_mode_inc_left = ' -a 7 '
     cmd_defaults = ' -w 3 -O '
-    five_any_characters = " \"?a?a?a?a?a\" "
+    five_any_characters = " ?a?a?a?a?a "
     four_numbers = " ?d?d?d?d "
     hash_type_NetNTLMv2 = ' -m 5600 '
     increment = ' --increment'
@@ -162,6 +162,36 @@ def hashcat_command_line_menu():
     print("----Running Hashcat Command----")
 
 
+#Hash Mode Selection Menu
+def hash_mode_menu():
+    loop = True
+    global hash_type
+    while loop:
+        print("Input Hash Mode To Crack")
+        prCyan("\t(0) NTLM {AKA NTHASH} - A SAM Database Hash - NTDS.dit File Accessed from the Domain Controller file - Mimikatz - {PTH Possible}")
+        prGreen("\t\t NTLM Example - 49a9a1e1f0127c7d70d750349d0bc09a - Only the NTHASH is Needed - order (LM-NT)")
+        prLightPurple("\t(1) - Net-NTLMv1 Hash {AKA NTLMv1}")
+        prGreen("\t\t Net-NTLMv1 Hash Example - u4-netntlm::kNS:338d08f8e26de93300000000000000000000000000000000:9526fb8c23a90751cdd619b6cea564742e1e4bf33006ba41:cb8086049ec4736c")
+        prCyan("\t(2) - Net-NTLMv2 Hash {AKA NTLMv2}")
+        prGreen("\t\t Net-NTLMv2 Hash Example - admin::N46iSNekpT:08ca45b7d7ea58ee:88dcbe4446168966a153a0064958dac6:5c7830315c7830310000000000000b45c67103d07d7b95acd12ffa11230e0000000052920b85f78d013c31cdb3b92f5d765c783030")
+        prRed("\t(3) Back")
+        hm_answer = input(": ")
+        if hm_answer == "0":
+            hash_type = ' -m 1000 '
+            return hash_type
+        elif hm_answer == "1":
+            hash_type = ' -m 5500 '
+            return hash_type
+        elif hm_answer == "2":
+            hash_type = ' -m 5600 '
+            return hash_type
+        elif hm_answer == "3":
+            crack_menu()
+        else:
+            input("You did not give a valid answer, press any key to try again or press 3 to go back")
+            os.system('clear')
+                                                                                                        
+
 #Straight Wordlist_walk
 def wordlist_walk():
     exten = ''
@@ -169,7 +199,7 @@ def wordlist_walk():
         for wordlist_filename in files:
             if wordlist_filename.endswith(exten):
                 abs_wordlist = (os.path.join(dirpath, wordlist_filename))
-                subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
+                subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + abs_wordlist + cmd_defaults, shell=True)
                 os.system('clear')
                 
 
@@ -179,67 +209,67 @@ def rule_set_walk():
     for root, dirs, files in os.walk(rule_set_directory):
         for filename in fnmatch.filter(files, exten):
             abs_rule_set = (os.path.join(root, filename))
-            subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
+            subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + cmd_defaults + pot_file + single_wordlist + rule_set_arg + abs_rule_set, shell=True)
             os.system('clear')
 
             
 #Single Wordlist
 def singular_wordlist():
     global hash_path_and_name
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + cmd_defaults, shell=True)
     os.system('clear')
     
 #Single list for menu 5 - Oxford Dictionary + Starting with UPPER Case + upto 3 ANY Characters on RIGHT SIDE
 def hc_command_menu_5():
     #print(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + wordlist_directory + three_any_characters + cmd_defaults + increment + increment_min + increment_max)
-    subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + three_any_characters + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_right + hash_type + hash_path_and_name + pot_file + single_wordlist + three_any_characters + cmd_defaults + increment, shell=True)
     os.system('clear')
     
 #Single list for menu 6 - Oxford Dictionary + Starting with UPPER Case + upto 3 ANY Characters on LEFT SIDE
 def hc_command_menu_6():
-    subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + three_any_characters + single_wordlist + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_left + hash_type + hash_path_and_name + pot_file + three_any_characters + single_wordlist + cmd_defaults + increment, shell=True)
     os.system('clear')
     
 #Hashcat Dictionary wordlist with rules - Oxford Dictionary Starting with UPPER Case + {upto 4 Numbers LEFT SIDE, upto 4 numbers RIGHT SIDE}
 def hc_command_menu_7():
     #Four Numbers (Left Side)
-    subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + four_numbers + single_wordlist + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_left + hash_type + hash_path_and_name + pot_file + four_numbers + single_wordlist + cmd_defaults + increment, shell=True)
     #Four Numbers (Right Side)
-    subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + four_numbers + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_right + hash_type + hash_path_and_name + pot_file + single_wordlist + four_numbers + cmd_defaults + increment, shell=True)
     os.system('clear')
 
 #Rule set Directory 11 # L33t speak rules (leetspeak.rule + unix-ninja-leetspeak.rule)
 def hc_command_menu_11():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_2 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_2 + cmd_defaults, shell=True)
     os.system('clear')
 
 #Hashcat with Rule Sets
 def singular_wordlist_rule_set():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_directory + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_directory + cmd_defaults, shell=True)
     os.system('clear')
     
 #Hashcat with Rule Sets - For rule 3 multiple custom Rules
 def multiple_wordlist_rule_set():
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_2 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_3 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_4 + cmd_defaults, shell=True)
-    subprocess.call(app + attack_mode_brute_force + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_1 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_2 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_3 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_4 + cmd_defaults, shell=True)
+    subprocess.call(app + attack_mode_brute_force + hash_type + hash_path_and_name + pot_file + single_wordlist + rule_set_arg + rule_set_file_5 + cmd_defaults, shell=True)
     os.system('clear')
 
 #Cewl Menu 17 - {5 ANY Characters RIGHT --> LEFT incrementally} ( could take a while dependant on size of cewl wordlist generated)
 def cewl_wordlist_dic():
     #Right Side
     #print(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + five_any_characters + cmd_defaults + increment + increment_min + increment_max)
-    subprocess.call(app + attack_mode_inc_right + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + single_wordlist + five_any_characters + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_right + hash_type + hash_path_and_name + pot_file + single_wordlist + five_any_characters + cmd_defaults + increment, shell=True)
     #Left Side
-    subprocess.call(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + five_any_characters + single_wordlist + cmd_defaults + increment, shell=True)
+    subprocess.call(app + attack_mode_inc_left + hash_type + hash_path_and_name + pot_file + five_any_characters + single_wordlist + cmd_defaults + increment, shell=True)
     #print(app + attack_mode_inc_left + hash_type_NetNTLMv2 + hash_path_and_name + pot_file + five_any_characters + single_wordlist + cmd_defaults + increment + increment_min + increment_max)
     os.system('clear')
     
     
-#Crack Menu 0 - Try all words lists lessthan <1GB -  Common Credentials
+#Crack Menu 0 - Try all words lists less than <1GB -  Common Credentials
 #Updated and merged all smaller wordlists into one file for more effcient testing (find . -name "*.txt" | xargs cat >> ./mergedfile.txt)
 def crack_menu_0():
     global single_wordlist
@@ -253,6 +283,7 @@ def crack_menu_0():
     else:
         single_wordlist = "/opt/wordlists/less-than-1GB/merged_file_uniq.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist()
     
@@ -261,6 +292,7 @@ def crack_menu_1():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/1GB-4GB/"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     wordlist_walk()
                 
@@ -269,6 +301,7 @@ def crack_menu_2():
     global single_wordlist
     single_wordlist = "/opt/wordlists/4GB+/crackstation.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist()
         
@@ -296,6 +329,7 @@ def crack_menu_3():
     rule_set_file_4 = os.path.join(rules_dir, 'oscommerce.rule')
     rule_set_file_5 = os.path.join(rules_dir, 'rockyou-30000.rule')
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     multiple_wordlist_rule_set()
     
@@ -304,6 +338,7 @@ def crack_menu_4():
     global wordlist_directory
     wordlist_directory = "/opt/wordlists/4GB+/"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     wordlist_walk()
 
@@ -312,6 +347,7 @@ def crack_menu_5():
     global single_wordlist
     single_wordlist = "/opt/wordlists/english-words/words.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     hc_command_menu_5()
 
@@ -320,6 +356,7 @@ def crack_menu_6():
     global single_wordlist
     single_wordlist = "/opt/wordlists/english-words/words_first_letter_upper.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     hc_command_menu_6()
                 
@@ -328,6 +365,7 @@ def crack_menu_7():
     global single_wordlist
     single_wordlist = "/opt/wordlists/english-words/words_first_letter_upper.txt"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     hc_command_menu_7()
 
@@ -347,6 +385,7 @@ def crack_menu_8():
         single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hashcat/rules/best64.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -366,6 +405,7 @@ def crack_menu_9():
             single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hashcat/rules/d3ad0ne.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
     
@@ -385,6 +425,7 @@ def crack_menu_10():
         single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hashcat/rules/password_cracking_rules/OneRuleToRuleThemAll.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -409,6 +450,7 @@ def crack_menu_11():
     rule_set_file_1 = os.path.join(rules_dir, 'leetspeak.rule')
     rule_set_file_2 = os.path.join(rules_dir, 'unix-ninja-leetspeak.rule')
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     hc_command_menu_11()
 
@@ -447,6 +489,7 @@ def crack_menu_13():
         single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/rockyou-30000.rule"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     singular_wordlist_rule_set()
 
@@ -466,6 +509,7 @@ def crack_menu_14():
         single_wordlist = default_cewl_file_output
     rule_set_directory = "/opt/hat-hashcat-automation-tool/rules/hob0Rules/"
     pot_function()
+    hash_mode_menu()
     hashcat_command_line_menu()
     rule_set_walk()
 
@@ -595,7 +639,7 @@ def crack_menu():
                 print(" Amount of Cewl words written + Absolute Path: ")
                 prYellow(cewl_wordlist_size)
             print("")
-            prLightGray("Currently Only for NetNTLMv2 Hashes AKA (NTLMv2) {NTLM / WPA / WEP to do}")
+            prLightGray("Currently for NTLM -> NetNTLMv1 -> NetNTLMv2 Hashes {WPA / WEP to do}")
             prCyan("0) Automated Testing - Custom Common Credentials - includes rockyou, hashkiller - {Corporate Scan}")
             prLightPurple("1) Automated Testing - All words lists between 1GB - <4GB - {Comprehensive Scan}")
             prCyan("2) Automated Testing - Crackstation list (15GB) - (Runtime ~2min 5sec) - {General Scan}")
@@ -687,6 +731,7 @@ def hash_from_file():
     banner()
     print(" Add the hash file into hash_upload directory show below: ")
     prCyan(hash_upload_dir)
+    print("")
     print(" Below are the files currently available in the file uploads directory.. (Hit Enter to Refresh)")
     print("")
 #Used for removing emacs created backup files ending with a tilde
@@ -694,7 +739,7 @@ def hash_from_file():
     for root, dirs, files in os.walk(hash_upload_dir):
         for file in files:
             if not file.endswith(ignore):
-                print(os.path.join(root, file))
+                print("\t" + os.path.join(root, file))
     print("")
     hash_input = input(" Select the filename from the above list to be uploaded: ")
     os.chdir(hash_upload_dir)
